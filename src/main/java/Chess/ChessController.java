@@ -87,8 +87,8 @@ private TextArea blackMovesArea;
 
     if (valgtPosisjon == null) { 
         // hvis ingen rute er valgt fra før
-        if (brikke != null) { 
-            // hvis ruten faktisk har en brikke
+        if (erEgenBrikke(brikke)) { 
+            // hvis ruten har en brikke som tilhører den som har tur
             valgtPosisjon = pos; 
             // velg denne ruten
         }
@@ -108,7 +108,8 @@ private TextArea blackMovesArea;
                 if (game.gameOver) {
             visGameOverTekst();
 }
-            } else if (brikke != null){
+            } else if (erEgenBrikke(brikke)){
+                // ugyldig trekk, men brukeren klikket på en annen av sine egne brikker
                 valgtPosisjon = pos;
             } else { valgtPosisjon = null;}
     }
@@ -116,6 +117,11 @@ private TextArea blackMovesArea;
 
     tegnBrett(); 
     // tegn hele brettet på nytt så markeringene oppdateres på skjermen
+}
+
+private boolean erEgenBrikke(Brikke brikke) {
+    // bare brikkene til den som har tur kan velges
+    return brikke != null && brikke.getColor().equals(game.getTurn());
 }
 
 private List<Position> markerteRuter() {
