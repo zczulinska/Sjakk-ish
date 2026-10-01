@@ -35,7 +35,7 @@ Med standard notasjon blir det `B1->C3`. Testene ville da sjekke en notasjon vi 
   - `Move` bruker denne metoden.
   - Tester: en bundet brikke kan ikke flytte, en konge i sjakk må komme seg ut, og kongen kan ikke gå inn i sjakk.
 
-- [ ] **Steg 4: Grafikken markerer bare lovlige trekk**
+- [x] **Steg 4: Grafikken markerer bare lovlige trekk**
   - `ChessController` bruker `game.lovligeTrekk` i stedet for å spørre brikken direkte.
 
 - [ ] **Steg 5: Sjakkmatt og patt avslutter spillet**

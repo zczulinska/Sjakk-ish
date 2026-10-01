@@ -43,6 +43,7 @@ private TextArea blackMovesArea;
 
     private void tegnBrett() {
         chessBoard.getChildren().clear();
+        List<Position> markerte = markerteRuter(); //regnes ut én gang per tegning, ikke for hver rute
 
         for (int rad = 0; rad < 8; rad++) {
             for (int kolonne = 0; kolonne <8 ; kolonne++) {
@@ -52,7 +53,7 @@ private TextArea blackMovesArea;
 
                 Rectangle bakgrunn = new Rectangle( 80,80);
 
-                if (erMarkert(pos)) {
+                if (markerte.contains(pos)) {
                     bakgrunn.setFill(Color.YELLOWGREEN);
                 } else if ((rad + kolonne) % 2 == 0) {
                     bakgrunn.setFill(Color.DARKSLATEGREY);
@@ -117,28 +118,14 @@ private TextArea blackMovesArea;
     // tegn hele brettet på nytt så markeringene oppdateres på skjermen
 }
 
-private boolean erMarkert(Position pos) {
+private List<Position> markerteRuter() {
     if (valgtPosisjon == null) {
         // hvis ingen brikke er valgt, skal ingen ruter markeres
-        return false;
+        return List.of();
     }
 
-    Brikke valgtBrikke = game.getBoard().getBrikke(valgtPosisjon); 
-    // henter brikken som står på den valgte ruten
-
-    if (valgtBrikke == null) {
-        // sikkerhetssjekk: hvis valgt rute ikke har brikke likevel
-        return false;
-    }
-
-    valgtBrikke.lovligetrekk(game.getBoard()); 
-    // ber brikken regne ut hvilke trekk som er lovlige
-
-    List<Position> trekk = valgtBrikke.getlovligetrekk(); 
-    // henter lista med lovlige ruter
-
-    return trekk.contains(pos); 
-    // returnerer true hvis denne ruten er en av de lovlige trekkene
+    return game.lovligeTrekk(valgtPosisjon);
+    // spillet regner ut hvilke trekk som er lovlige, også at egen konge ikke havner i sjakk
 }
 
 private void visGameOverTekst() {
