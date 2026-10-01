@@ -119,5 +119,37 @@ public class ChessTest {
 
     }
 
-}
+    @Test
+    void emptyBoard(){
+        Board tomt = Board.tomtBrett();
+        for(int row=0; row<8; row++){
+            for(int col=0; col<8; col++){
+                assertEquals(null, tomt.getBrikke(new Position(row, col)));
+            }
+        }
+    }
 
+    @Test
+    void placePiece(){
+        Board tomt = Board.tomtBrett();
+        Rook rook = new Rook("W", new Position(3,4));
+        tomt.settBrikke(rook);
+        assertEquals(rook, tomt.getBrikke(new Position(3,4)));
+    }
+
+    @Test
+    void gameFromCustomBoard(){
+        Board tomt = Board.tomtBrett();
+        tomt.settBrikke(new King("W", new Position(0,4)));
+        tomt.settBrikke(new King("B", new Position(7,4)));
+        tomt.settBrikke(new Rook("W", new Position(3,0)));
+        ChessGame customGame = new ChessGame(tomt);
+
+        assertEquals(tomt, customGame.getBoard());
+        assertTrue(customGame.Move(new Position(3,0), new Position(3,7)));
+        assertEquals(Rook.class, tomt.getBrikke(new Position(3,7)).getClass());
+        assertEquals(null, tomt.getBrikke(new Position(3,0)));
+        assertEquals("B", customGame.getTurn());
+    }
+
+}

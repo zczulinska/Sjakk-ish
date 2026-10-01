@@ -20,7 +20,7 @@ Med standard notasjon blir det `B1->C3`. Testene ville da sjekke en notasjon vi 
   - Bytte Sjakk-ish til Sjakk-link i `pom.xml` og i vindustittelen i `ChessApp`.
   - Legge til `.gitignore` for `data/` og `target/`.
 
-- [ ] **Steg 1: Gjøre det mulig å teste egne stillinger**
+- [x] **Steg 1: Gjøre det mulig å teste egne stillinger**
   - `Board` får en måte å lage et tomt brett på og sette ut enkeltbrikker. `ChessGame` kan startes med et ferdig brett.
   - Uten dette må hver test spille seg fram til stillingen trekk for trekk.
   - Tester: tomt brett og utsetting av brikker.

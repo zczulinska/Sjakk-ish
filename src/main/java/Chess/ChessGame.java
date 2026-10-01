@@ -19,7 +19,11 @@ public class ChessGame implements ChessRules{
 
 
     public ChessGame(){
-        this.board = new Board();
+        this(new Board());
+    }
+
+    public ChessGame(Board board){ //starter spillet fra en gitt stilling
+        this.board = board;
         this.fileHandler = new ChessFileHandler();
         try{
         fileHandler.nullstillFiler();}

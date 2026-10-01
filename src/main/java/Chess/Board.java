@@ -6,7 +6,21 @@ public class Board {
     private Brikke[][] board = new Brikke[8][8]; //Array med 8x8 ruter 
 
     public Board(){
-        settOppBrikker();
+        this(true);
+    }
+
+    private Board(boolean medBrikker){
+        if(medBrikker){
+            settOppBrikker();
+        }
+    }
+
+    public static Board tomtBrett(){ //brett uten brikker, brukes for å sette opp egne stillinger
+        return new Board(false);
+    }
+
+    public void settBrikke(Brikke brikke){ //setter brikken på ruten den selv har som posisjon
+        board[brikke.getPosition().getrow()][brikke.getPosition().getcol()] = brikke;
     }
 
     private void settOppBrikker() {
