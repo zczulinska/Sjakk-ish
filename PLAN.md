@@ -39,7 +39,7 @@ Med standard notasjon blir det `B1->C3`. Testene ville da sjekke en notasjon vi 
   - `ChessController` bruker `game.lovligeTrekk` i stedet for å spørre brikken direkte.
   - Bare brikkene til den som har tur kan velges, så man ser ikke motstanderens trekk.
 
-- [ ] **Steg 5: Sjakkmatt og patt avslutter spillet**
+- [x] **Steg 5: Sjakkmatt og patt avslutter spillet**
   - Etter hvert trekk sjekkes det om motstanderen har lovlige trekk igjen:
     - Ingen trekk og står i sjakk: sjakkmatt, og den som trakk vinner.
     - Ingen trekk og står ikke i sjakk: patt, og det blir remis.

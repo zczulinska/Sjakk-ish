@@ -289,4 +289,50 @@ public class ChessTest {
         assertEquals(new Position(1,4), tomt.getBrikke(new Position(1,4)).getPosition());
     }
 
+    @Test
+    void foolsMate(){
+        assertTrue(game.Move(new Position(1,5), new Position(2,5))); //f3
+        assertTrue(game.Move(new Position(6,4), new Position(4,4))); //e5
+        assertTrue(game.Move(new Position(1,6), new Position(3,6))); //g4
+        assertTrue(game.Move(new Position(7,3), new Position(3,7))); //Dh4 matt
+
+        assertTrue(game.isGameOver());
+        assertTrue(game.erSjakkMatt());
+        assertFalse(game.erPatt());
+        assertEquals("B", game.getWinner());
+        assertFalse(game.Move(new Position(1,0), new Position(2,0))); //ingen trekk etter matt
+    }
+
+    @Test
+    void stalemate(){
+        Board tomt = Board.tomtBrett();
+        tomt.settBrikke(new King("W", new Position(0,0)));
+        tomt.settBrikke(new King("B", new Position(7,7)));
+        tomt.settBrikke(new Queen("W", new Position(5,5)));
+        ChessGame customGame = new ChessGame(tomt);
+
+        assertTrue(customGame.Move(new Position(5,5), new Position(5,6))); //svart konge kan ikke flytte, men står ikke i sjakk
+
+        assertTrue(customGame.isGameOver());
+        assertTrue(customGame.erPatt());
+        assertFalse(customGame.erSjakkMatt());
+        assertEquals(null, customGame.getWinner());
+    }
+
+    @Test
+    void checkDoesNotEndGame(){
+        Board tomt = Board.tomtBrett();
+        tomt.settBrikke(new King("W", new Position(0,4)));
+        tomt.settBrikke(new King("B", new Position(7,4)));
+        tomt.settBrikke(new Rook("W", new Position(3,0)));
+        ChessGame customGame = new ChessGame(tomt);
+
+        assertTrue(customGame.Move(new Position(3,0), new Position(3,4))); //sjakk
+        assertTrue(customGame.erSjakk());
+        assertFalse(customGame.isGameOver());
+
+        assertTrue(customGame.Move(new Position(7,4), new Position(7,3))); //kongen går ut av sjakk
+        assertFalse(customGame.erSjakk());
+    }
+
 }

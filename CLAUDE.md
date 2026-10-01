@@ -36,7 +36,7 @@ All kode ligger i pakken `Chess` (`src/main/java/Chess/`), modulen heter `TDT410
 | `Board` | 8×8-array `Brikke[][]`, setter opp startstillingen, `getBrikke(Position)` og `movePiece(fra, til)`. |
 | `Position` | Uforanderlig rad/kolonne (0–7). Kaster `IllegalArgumentException` utenfor brettet. Har `equals`/`hashCode`. |
 | `ChessRules` | Grensesnitt for spillogikken. |
-| `ChessGame` | Implementerer `ChessRules`: tur, validering og utføring av trekk (`Move`), sjekker om en konge er slått (`erSjakkMatt`), vinner, logging til fil. |
+| `ChessGame` | Implementerer `ChessRules`: tur, validering og utføring av trekk (`Move`), lovlige trekk (`lovligeTrekk`), sjakk, sjakkmatt og patt, vinner, logging til fil. |
 | `ChessFileHandler` | Gjør posisjoner om til koordinater (`finnPosisjon`) og skriver trekk til `data/Trekkhvit.txt` og `data/Trekksvart.txt`. Filene nullstilles når et nytt `ChessGame` lages. |
 | `ChessController` | JavaFX-kontroller for `ChessApp.fxml`: tegner brettet, håndterer klikk, markerer lovlige trekk og viser trekklister og vinner. |
 | `ChessApp` | JavaFX-oppstart. |
@@ -49,7 +49,7 @@ Ressurser (FXML og brikkebilder) ligger i `src/main/resources/Chess/`. Testene l
 - **Trekkgenerering:** brikkene lager posisjoner med `new Position(...)` og fanger `IllegalArgumentException` for å hoppe over ruter utenfor brettet.
 - **`setBrukt()`** brukes bare av `Pawn` (for dobbelsteg). Andre brikker har tomme implementasjoner. Det trengs også for konge og tårn ved rokade.
 - **`Brikke.getlovligetrekk`-feltet** i superklassen brukes ikke; alle subklasser overstyrer `getlovligetrekk()`.
-- **`erSjakkMatt()`** sjekker i dag bare om det finnes færre enn to konger, altså ikke ekte sjakkmatt.
+- **Spillslutt:** etter hvert trekk sjekker `ChessGame` om den som har tur har lovlige trekk. Ingen trekk og i sjakk gir sjakkmatt, ingen trekk uten sjakk gir patt (remis, `getWinner()` er `null`).
 - **Kontrolleren** kaller `lovligetrekk` direkte for å markere ruter. Når trekkvalidering (f.eks. at egen konge ikke kan stå i sjakk) flyttes inn i `ChessGame`, må markeringen bruke samme logikk.
 - `ChessGame.gameOver` og `fileHandler` er `public` og brukes direkte av kontrolleren.
 

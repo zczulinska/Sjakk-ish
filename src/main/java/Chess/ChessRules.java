@@ -19,7 +19,11 @@ public interface ChessRules {
 
     String getTurn();
 
-    void erSjakkMatt();
+    Boolean erSjakk();
+
+    Boolean erSjakkMatt();
+
+    Boolean erPatt();
 
     
 }

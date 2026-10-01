@@ -9,6 +9,7 @@ public class ChessGame implements ChessRules{
     private Board board;
     public boolean gameOver;
     private String winner;
+    private boolean patt;
     public ChessFileHandler fileHandler;
     
 
@@ -54,18 +55,41 @@ public class ChessGame implements ChessRules{
         return turn;
     }
 
-    public void erSjakkMatt(){
-        int sjekk = 0;
-        for(int row=0;row<8;row++){
+    public Boolean erSjakk(){ //står den som har tur i sjakk
+        return board.erISjakk(turn);
+    }
+
+    public Boolean erSjakkMatt(){
+        return gameOver && winner != null;
+    }
+
+    public Boolean erPatt(){
+        return patt;
+    }
+
+    private boolean harLovligeTrekk(String farge){
+        for(int row=0; row<8; row++){
             for(int kol=0; kol<8; kol++){
-                Brikke brikke = board.getBrikke(new Position(row, kol));
-                if(brikke instanceof King){
-                    sjekk+=1;
+                Position pos = new Position(row, kol);
+                Brikke brikke = board.getBrikke(pos);
+                if(brikke != null && brikke.getColor().equals(farge) && !lovligeTrekk(pos).isEmpty()){
+                    return true;
                 }
             }
         }
-        if(sjekk<2){
-            gameOver=true;
+        return false;
+    }
+
+    private void sjekkOmSpilletErSlutt(){ //kalles etter turbytte: kan den som har tur gjøre noe?
+        if(harLovligeTrekk(turn)){
+            return;
+        }
+        gameOver = true;
+        if(board.erISjakk(turn)){
+            winner = "W".equals(turn) ? "B" : "W"; //sjakkmatt, den som trakk sist vinner
+        }
+        else{
+            patt = true; //remis, ingen vinner
         }
     }
 
@@ -127,11 +151,8 @@ public class ChessGame implements ChessRules{
         fileHandler.skrivTrekk(fra, til, color);
         } catch (Exception e) {e.printStackTrace();} //skriver ut hva som gikk galt
 
-        erSjakkMatt();
-        if (gameOver) {
-            winner = turn;}
-        
         PlayerTurnChange();
+        sjekkOmSpilletErSlutt();
         return true;
         
     }        
