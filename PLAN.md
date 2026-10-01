@@ -70,7 +70,7 @@ Med standard notasjon blir det `B1->C3`. Testene ville da sjekke en notasjon vi 
   - `Move` får en variant der man velger brikke. Vanlig `Move` gir dronning.
   - Tester: forvandling til dronning og til springer, og forvandling der bonden slår en brikke.
 
-- [ ] **Steg 10: Bondeforvandling i grafikken**
+- [x] **Steg 10: Bondeforvandling i grafikken**
   - En dialog lar spilleren velge mellom dronning, tårn, løper og springer.
 
 - [ ] **Steg 11: Standard notasjon**

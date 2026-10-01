@@ -1,6 +1,9 @@
 package Chess;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 
 import javafx.fxml.FXML;
@@ -10,6 +13,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
@@ -108,7 +112,19 @@ private TextArea blackMovesArea;
             // fjern valget
         } else {
             // hvis brukeren klikker på en annen rute
-            boolean flyttet = game.Move(valgtPosisjon, pos);
+            boolean flyttet;
+            if (game.erBondeforvandling(valgtPosisjon, pos) && game.lovligeTrekk(valgtPosisjon).contains(pos)) {
+                // bonden når siste rad, spilleren velger hva den skal bli
+                Optional<String> valg = velgForvandling();
+                if (valg.isEmpty()) {
+                    // spilleren avbrøt, bonden forblir valgt og ingenting flyttes
+                    tegnBrett();
+                    return;
+                }
+                flyttet = game.Move(valgtPosisjon, pos, valg.get());
+            } else {
+                flyttet = game.Move(valgtPosisjon, pos);
+            }
             if(flyttet){
                 oppdaterTrekkVisning();
                 oppdaterStatus();
@@ -122,6 +138,21 @@ private TextArea blackMovesArea;
 
     tegnBrett(); 
     // tegn hele brettet på nytt så markeringene oppdateres på skjermen
+}
+
+private Optional<String> velgForvandling() {
+    // norsk navn i dialogen, klassenavnet som ChessGame forventer
+    Map<String, String> brikker = new LinkedHashMap<>();
+    brikker.put("Dronning", "Queen");
+    brikker.put("Tårn", "Rook");
+    brikker.put("Løper", "Bishop");
+    brikker.put("Springer", "Horse");
+
+    ChoiceDialog<String> dialog = new ChoiceDialog<>("Dronning", brikker.keySet());
+    dialog.setTitle("Bondeforvandling");
+    dialog.setHeaderText("Bonden har nådd siste rad");
+    dialog.setContentText("Velg ny brikke:");
+    return dialog.showAndWait().map(brikker::get);
 }
 
 private boolean erEgenBrikke(Brikke brikke) {
