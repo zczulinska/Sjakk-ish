@@ -21,7 +21,11 @@
                       prefHeight="640" />
         </VBox>
 
-        <GridPane fx:id="chessBoard" alignment="CENTER"/>
+        <VBox alignment="CENTER" spacing="10">
+            <Label fx:id="statusLabel"
+                   style="-fx-font-size: 20px; -fx-font-weight: bold;" />
+            <GridPane fx:id="chessBoard" alignment="CENTER"/>
+        </VBox>
 
         <VBox alignment="CENTER" spacing="10">
             <Label text="Svarte trekk" />

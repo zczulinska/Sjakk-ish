@@ -46,7 +46,7 @@ Med standard notasjon blir det `B1->C3`. Testene ville da sjekke en notasjon vi 
   - `erSjakkMatt()`, som teller konger, fjernes. `ChessRules` oppdateres, for eksempel med `erSjakk()` og en måte å se resultatet på.
   - Tester: narrematt (de fire trekkene f3, e5, g4, Dh4#), en kjent pattstilling, og at sjakk alene ikke avslutter spillet.
 
-- [ ] **Steg 6: Vise resultatet i grafikken**
+- [x] **Steg 6: Vise resultatet i grafikken**
   - Vise «Sjakk!» når kongen står i sjakk.
   - Vise «Hvit/Svart vant ved sjakkmatt» eller «Remis (patt)», lest fra `ChessGame` i stedet for å utledes fra hvem sin tur det er.
 
@@ -78,6 +78,16 @@ Med standard notasjon blir det `B1->C3`. Testene ville da sjekke en notasjon vi 
 
 - [ ] **Steg 12: Oppdatere README**
   - README beskriver Sjakk-link og de nye reglene.
+
+## AI-ideer
+
+Endringer som ikke var med i den opprinnelige planen, men som ble foreslått av AI underveis.
+
+- [x] **Vise hvem sin tur det er over brettet** (lagt til i steg 6)
+  - Siden bare den som har tur kan velge brikker, er det nyttig å se hvem det er.
+- [x] **Farge kongens rute rød når den står i sjakk**
+  - `Board` får `finnKonge(farge)`, som også brukes av `erISjakk`.
+  - Ruten forblir rød etter sjakkmatt, så man ser hvilken konge som ble satt matt.
 
 ## Avklaringer
 

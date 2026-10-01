@@ -22,6 +22,9 @@ private VBox gameOverBox;
 
 @FXML
 private Label winnerLabel;
+
+@FXML
+private Label statusLabel;
     @FXML
     private GridPane chessBoard;
 
@@ -39,11 +42,13 @@ private TextArea blackMovesArea;
         game = new ChessGame();
         tegnBrett();
         oppdaterTrekkVisning();
+        oppdaterStatus();
     }
 
     private void tegnBrett() {
         chessBoard.getChildren().clear();
         List<Position> markerte = markerteRuter(); //regnes ut én gang per tegning, ikke for hver rute
+        Position kongeISjakk = game.erSjakk() ? game.getBoard().finnKonge(game.getTurn()) : null;
 
         for (int rad = 0; rad < 8; rad++) {
             for (int kolonne = 0; kolonne <8 ; kolonne++) {
@@ -55,6 +60,8 @@ private TextArea blackMovesArea;
 
                 if (markerte.contains(pos)) {
                     bakgrunn.setFill(Color.YELLOWGREEN);
+                } else if (pos.equals(kongeISjakk)) {
+                    bakgrunn.setFill(Color.INDIANRED);
                 } else if ((rad + kolonne) % 2 == 0) {
                     bakgrunn.setFill(Color.DARKSLATEGREY);
                 } else {
@@ -104,10 +111,8 @@ private TextArea blackMovesArea;
             boolean flyttet = game.Move(valgtPosisjon, pos);
             if(flyttet){
                 oppdaterTrekkVisning();
+                oppdaterStatus();
                 valgtPosisjon = null;
-                if (game.gameOver) {
-            visGameOverTekst();
-}
             } else if (erEgenBrikke(brikke)){
                 // ugyldig trekk, men brukeren klikket på en annen av sine egne brikker
                 valgtPosisjon = pos;
@@ -134,9 +139,27 @@ private List<Position> markerteRuter() {
     // spillet regner ut hvilke trekk som er lovlige, også at egen konge ikke havner i sjakk
 }
 
+private void oppdaterStatus() {
+    if (game.isGameOver()) {
+        statusLabel.setText("Spillet er over");
+        visGameOverTekst();
+        return;
+    }
+    String spiller = game.getTurn().equals("W") ? "Hvit" : "Svart";
+    if (game.erSjakk()) {
+        statusLabel.setText("Sjakk! " + spiller + " sin tur");
+    } else {
+        statusLabel.setText(spiller + " sin tur");
+    }
+}
+
 private void visGameOverTekst() {
-    String vinner = game.getTurn().equals("W") ? "Svart vant" : "Hvit vant";
-    winnerLabel.setText(vinner);
+    if (game.erPatt()) {
+        winnerLabel.setText("Remis (patt)");
+    } else {
+        String vinner = game.getWinner().equals("W") ? "Hvit" : "Svart";
+        winnerLabel.setText(vinner + " vant ved sjakkmatt");
+    }
     gameOverBox.setVisible(true);
 }
 

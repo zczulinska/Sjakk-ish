@@ -335,4 +335,11 @@ public class ChessTest {
         assertFalse(customGame.erSjakk());
     }
 
+    @Test
+    void findKing(){
+        assertEquals(new Position(0,4), board.finnKonge("W"));
+        assertEquals(new Position(7,4), board.finnKonge("B"));
+        assertEquals(null, Board.tomtBrett().finnKonge("W"));
+    }
+
 }

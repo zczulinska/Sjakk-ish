@@ -82,17 +82,25 @@ public class Board {
         return false;
     }
 
-    public boolean erISjakk(String farge){ //sjekker om kongen med denne fargen står i sjakk
-        String motstander = "W".equals(farge) ? "B" : "W";
+    public Position finnKonge(String farge){ //posisjonen til kongen med denne fargen, eller null
         for(int row=0; row<8; row++){
             for(int col=0; col<8; col++){
                 Brikke brikke = board[row][col];
                 if(brikke instanceof King && brikke.getColor().equals(farge)){
-                    return erAngrepet(brikke.getPosition(), motstander);
+                    return brikke.getPosition();
                 }
             }
         }
-        return false; //ingen konge på brettet
+        return null;
+    }
+
+    public boolean erISjakk(String farge){ //sjekker om kongen med denne fargen står i sjakk
+        Position konge = finnKonge(farge);
+        if(konge == null){
+            return false; //ingen konge på brettet
+        }
+        String motstander = "W".equals(farge) ? "B" : "W";
+        return erAngrepet(konge, motstander);
     }
 
     public void movePiece(Position fra, Position til){
