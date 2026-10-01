@@ -77,7 +77,7 @@ Med standard notasjon blir det `B1->C3`. Testene ville da sjekke en notasjon vi 
   - `finnPosisjon` endres slik at hvit står på rad 1 og 2. De to testene nevnt over oppdateres.
   - Bondeforvandling skrives med norsk bokstav etter trekket, for eksempel `E7->E8=D`.
 
-- [ ] **Steg 12: Oppdatere README**
+- [x] **Steg 12: Oppdatere README**
   - README beskriver Sjakk-link og de nye reglene.
 
 ## AI-ideer

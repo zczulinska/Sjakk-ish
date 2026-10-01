@@ -4,7 +4,7 @@
 
 - Prosjektet het tidligere **Sjakk-ish**: en forenklet sjakkversjon (ingen sjakk/sjakkmatt, rokade, en passant eller bondeforvandling; spillet vinnes ved å slå kongen). Denne versjonen er lagret i release/tag `v1.0-sjakk-ish`.
 - Nå skal det gjøres om til **Sjakk-link** (står for «sjakk klink»), som skal være **full sjakk** med alle reglene.
-- README.md beskriver fortsatt Sjakk-ish og oppdateres til slutt (steg 12 i `PLAN.md`).
+- README.md beskriver Sjakk-link. Hold den oppdatert når funksjoner eller antall tester endres.
 
 ## Arbeidsregler
 
