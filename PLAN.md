@@ -25,7 +25,7 @@ Med standard notasjon blir det `B1->C3`. Testene ville da sjekke en notasjon vi 
   - Uten dette må hver test spille seg fram til stillingen trekk for trekk.
   - Tester: tomt brett og utsetting av brikker.
 
-- [ ] **Steg 2: Angrepssjekk**
+- [x] **Steg 2: Angrepssjekk**
   - `Board` får en metode som sier om en rute er angrepet av en gitt farge. Den brukes for å finne ut om kongen står i sjakk.
   - Bonden behandles spesielt. Den angriper skrått også når ruten er tom, mens `lovligetrekk` bare legger til skrå trekk når det står en motstander der.
   - Tester: tårn, løper, springer, bonde og konge gir sjakk, og en brikke i veien blokkerer.

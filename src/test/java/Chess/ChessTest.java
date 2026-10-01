@@ -152,4 +152,75 @@ public class ChessTest {
         assertEquals("B", customGame.getTurn());
     }
 
+    @Test
+    void noCheckAtStart(){
+        assertFalse(board.erISjakk("W"));
+        assertFalse(board.erISjakk("B"));
+    }
+
+    @Test
+    void rookGivesCheckUnlessBlocked(){
+        Board tomt = Board.tomtBrett();
+        tomt.settBrikke(new King("W", new Position(0,4)));
+        tomt.settBrikke(new King("B", new Position(7,0)));
+        tomt.settBrikke(new Rook("B", new Position(5,4)));
+        assertTrue(tomt.erISjakk("W"));
+
+        tomt.settBrikke(new Pawn("W", new Position(2,4))); //brikke i veien
+        assertFalse(tomt.erISjakk("W"));
+    }
+
+    @Test
+    void bishopGivesCheck(){
+        Board tomt = Board.tomtBrett();
+        tomt.settBrikke(new King("W", new Position(0,4)));
+        tomt.settBrikke(new King("B", new Position(7,0)));
+        tomt.settBrikke(new Bishop("B", new Position(3,7)));
+        assertTrue(tomt.erISjakk("W"));
+    }
+
+    @Test
+    void horseGivesCheckOverOtherPieces(){
+        Board tomt = Board.tomtBrett();
+        tomt.settBrikke(new King("W", new Position(0,4)));
+        tomt.settBrikke(new King("B", new Position(7,0)));
+        tomt.settBrikke(new Pawn("W", new Position(1,4)));
+        tomt.settBrikke(new Pawn("W", new Position(1,5)));
+        tomt.settBrikke(new Horse("B", new Position(2,5)));
+        assertTrue(tomt.erISjakk("W"));
+    }
+
+    @Test
+    void pawnAttacksDiagonallyOnly(){
+        Board tomt = Board.tomtBrett();
+        tomt.settBrikke(new Pawn("B", new Position(5,3)));
+        assertTrue(tomt.erAngrepet(new Position(4,2), "B")); //tom rute skrått foran
+        assertTrue(tomt.erAngrepet(new Position(4,4), "B"));
+        assertFalse(tomt.erAngrepet(new Position(4,3), "B")); //rett frem er ikke angrep
+        assertFalse(tomt.erAngrepet(new Position(6,4), "B")); //bakover er ikke angrep
+
+        tomt.settBrikke(new Pawn("W", new Position(1,1)));
+        assertTrue(tomt.erAngrepet(new Position(2,0), "W"));
+        assertTrue(tomt.erAngrepet(new Position(2,2), "W"));
+        assertFalse(tomt.erAngrepet(new Position(2,1), "W"));
+    }
+
+    @Test
+    void pawnGivesCheck(){
+        Board tomt = Board.tomtBrett();
+        tomt.settBrikke(new King("W", new Position(0,4)));
+        tomt.settBrikke(new King("B", new Position(7,0)));
+        tomt.settBrikke(new Pawn("B", new Position(1,5)));
+        assertTrue(tomt.erISjakk("W"));
+    }
+
+    @Test
+    void kingAttacksNeighbourSquares(){
+        Board tomt = Board.tomtBrett();
+        tomt.settBrikke(new King("B", new Position(4,4)));
+        assertTrue(tomt.erAngrepet(new Position(3,3), "B"));
+        assertTrue(tomt.erAngrepet(new Position(4,5), "B"));
+        assertFalse(tomt.erAngrepet(new Position(2,4), "B"));
+    }
+
 }

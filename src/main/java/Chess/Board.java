@@ -59,6 +59,42 @@ public class Board {
         return(board[position.getrow()][position.getcol()]);
     }
 
+    public boolean erAngrepet(Position rute, String angriperFarge){ //sjekker om en brikke av angriperFarge kan slå på ruten
+        for(int row=0; row<8; row++){
+            for(int col=0; col<8; col++){
+                Brikke brikke = board[row][col];
+                if(brikke == null || !brikke.getColor().equals(angriperFarge)){
+                    continue;
+                }
+                if(brikke instanceof Pawn pawn){ //bondens vanlige trekk går rett frem, men den angriper skrått
+                    if(pawn.angriper(rute)){
+                        return true;
+                    }
+                }
+                else{
+                    brikke.lovligetrekk(this);
+                    if(brikke.getlovligetrekk().contains(rute)){
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean erISjakk(String farge){ //sjekker om kongen med denne fargen står i sjakk
+        String motstander = "W".equals(farge) ? "B" : "W";
+        for(int row=0; row<8; row++){
+            for(int col=0; col<8; col++){
+                Brikke brikke = board[row][col];
+                if(brikke instanceof King && brikke.getColor().equals(farge)){
+                    return erAngrepet(brikke.getPosition(), motstander);
+                }
+            }
+        }
+        return false; //ingen konge på brettet
+    }
+
     public void movePiece(Position fra, Position til){
         Brikke brikke = this.getBrikke(fra);
         board[fra.getrow()][fra.getcol()] = null;

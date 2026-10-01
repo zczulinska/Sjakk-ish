@@ -93,6 +93,12 @@ public class Pawn extends Brikke{
     }
     
 
+    public boolean angriper(Position rute){ //bonden angriper skrått fremover, også når ruten er tom
+        int retning = "W".equals(getColor()) ? 1 : -1;
+        return rute.getrow() == getPosition().getrow() + retning
+            && Math.abs(rute.getcol() - getPosition().getcol()) == 1;
+    }
+
     @Override
     public List<Position> getlovligetrekk() {
         return muligetrekk;
