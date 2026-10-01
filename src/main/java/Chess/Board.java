@@ -52,10 +52,6 @@ public class Board {
             board[7][7] = new Rook("B",new Position(7,7));
     }
     
-    public Brikke[][] getboard(){
-        return board;
-    }
-    
     public Brikke getBrikke(Position position){
         return(board[position.getrow()][position.getcol()]);
     }

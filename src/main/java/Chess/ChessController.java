@@ -43,7 +43,15 @@ private TextArea blackMovesArea;
 
     @FXML
     public void initialize() {
+        nyttParti();
+    }
+
+    @FXML
+    private void nyttParti() {
+        // starter et nytt spill fra startstillingen, trekkfilene nullstilles av ChessGame
         game = new ChessGame();
+        valgtPosisjon = null;
+        gameOverBox.setVisible(false);
         tegnBrett();
         oppdaterTrekkVisning();
         oppdaterStatus();

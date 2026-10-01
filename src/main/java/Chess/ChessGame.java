@@ -7,10 +7,10 @@ public class ChessGame implements ChessRules{
 
     private String turn = "W";
     private Board board;
-    public boolean gameOver;
+    private boolean gameOver;
     private String winner;
     private boolean patt;
-    public ChessFileHandler fileHandler;
+    private ChessFileHandler fileHandler;
     
 
     public Boolean isGameOver() {
@@ -182,6 +182,9 @@ public class ChessGame implements ChessRules{
     }
 
     private Brikke lagForvandling(String forvandling, String farge, Position position){ //lager brikken bonden blir til
+        if(forvandling == null){
+            throw new IllegalArgumentException("Bonden må bli til en brikke");
+        }
         switch(forvandling){
             case "Queen": return new Queen(farge, position);
             case "Rook": return new Rook(farge, position);
@@ -216,7 +219,7 @@ public class ChessGame implements ChessRules{
             return false;
         }
         //Trekket er gyldig, så nå gjennomfører vi trekket
-        String color = board.getBrikke(fra).getColor();
+        String color = brikke.getColor();
         boolean blirForvandlet = erBondeforvandling(fra, til); //må sjekkes før bonden flyttes
 
         board.fjernBrikke(slåttRute(brikke, fra, til)); //ved en passant står den slåtte bonden ikke på til-ruten

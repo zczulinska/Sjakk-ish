@@ -86,22 +86,6 @@ public class Bishop extends Brikke{
             }
             catch(IllegalArgumentException e){}//ikke gyldig posisjon
         }
-        // for(int i=-7;i<8;i++){
-        //     if(i==0){continue;}
-        //     try{
-        //         //skrå høyre 
-        //         Position mulig = new Position(getPosition().getrow()+i,getPosition().getcol()+i);
-        //         muligetrekk.add(mulig);
-        //     }
-        //     catch (IllegalArgumentException e){};
-
-        //     try{
-        //         //skrå venstre
-        //         Position mulig = new Position(getPosition().getrow()+i,getPosition().getcol()-i);
-        //         muligetrekk.add(mulig);
-        //     }
-        //     catch (IllegalArgumentException e){};
-        // }
     }
 
     public void setBrukt(){

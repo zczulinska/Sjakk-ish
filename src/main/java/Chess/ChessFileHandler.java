@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.List;
 
 
 public class ChessFileHandler {
@@ -34,20 +33,6 @@ public class ChessFileHandler {
         );
     }
 
-    public String lesTrekk(Path fil){
-        StringBuilder ut = new StringBuilder();
-        try{
-            List<String> innhold = Files.readAllLines(fil);
-            for(String line : innhold){
-                ut.append(line).append("\n");
-            }
-            return ut.toString();}
-        catch(IOException e){
-            e.printStackTrace();
-            return "";}
-        
-    }
-    
     public void nullstillFiler() throws IOException {
         Files.createDirectories(filHvit.getParent());
         Files.writeString(filHvit, "");

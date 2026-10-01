@@ -92,24 +92,6 @@ public class Rook extends Brikke{
             catch(IllegalArgumentException e){}
         }
         
-        //     for(int i=0; i<8;i++){//vannrett først
-        //         if(i==getPosition().getcol()){
-        //             continue;
-        //         }
-        //         else {
-        //             Position mulig = new Position(getPosition().getrow(),i);
-        //             muligetrekk.add(mulig);
-        //         }
-        //     }
-        //     for(int i=0; i<8;i++){//loddrett 
-        //         if(i==getPosition().getrow()){
-        //             continue;
-        //         }
-        //         else {
-        //             Position mulig = new Position(i,getPosition().getcol());
-        //             muligetrekk.add(mulig);
-        //         }
-        // }
     }
 
     @Override

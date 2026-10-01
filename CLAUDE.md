@@ -31,14 +31,14 @@ All kode ligger i pakken `Chess` (`src/main/java/Chess/`), modulen heter `TDT410
 
 | Klasse | Ansvar |
 |---|---|
-| `Brikke` | Abstrakt superklasse for alle brikker: farge (`"W"`/`"B"`), posisjon, `lovligetrekk(Board)`, `getlovligetrekk()`, `getImagePath()`, `setBrukt()`. |
-| `Pawn`, `Rook`, `Horse` (springer), `Bishop`, `Queen`, `King` | Hver subklasse regner ut sine egne pseudo-lovlige trekk i en egen liste `muligetrekk`. |
-| `Board` | 8×8-array `Brikke[][]`, setter opp startstillingen, `getBrikke(Position)` og `movePiece(fra, til)`. |
+| `Brikke` | Abstrakt superklasse for alle brikker: farge (`"W"`/`"B"`), posisjon og de abstrakte metodene `lovligetrekk(Board)`, `getlovligetrekk()`, `getImagePath()` og `setBrukt()`. |
+| `Pawn`, `Rook`, `Horse` (springer), `Bishop`, `Queen`, `King` | Hver subklasse regner ut sine egne pseudo-lovlige trekk (uten sjakksjekk) i en egen liste `muligetrekk`. |
+| `Board` | 8×8-array `Brikke[][]`, startstillingen eller tomt brett (`tomtBrett()`), `settBrikke`, `fjernBrikke`, `movePiece`, angrepssjekk (`erAngrepet`, `erISjakk`, `finnKonge`) og en passant-ruten. |
 | `Position` | Uforanderlig rad/kolonne (0–7). Kaster `IllegalArgumentException` utenfor brettet. Har `equals`/`hashCode`. |
 | `ChessRules` | Grensesnitt for spillogikken. |
 | `ChessGame` | Implementerer `ChessRules`: tur, validering og utføring av trekk (`Move`), lovlige trekk (`lovligeTrekk`), sjakk, sjakkmatt og patt, vinner, logging til fil. |
 | `ChessFileHandler` | Gjør posisjoner om til koordinater (`finnPosisjon`) og skriver trekk til `data/Trekkhvit.txt` og `data/Trekksvart.txt`. Filene nullstilles når et nytt `ChessGame` lages. |
-| `ChessController` | JavaFX-kontroller for `ChessApp.fxml`: tegner brettet, håndterer klikk, markerer lovlige trekk og viser trekklister og vinner. |
+| `ChessController` | JavaFX-kontroller for `ChessApp.fxml`: tegner brettet, håndterer klikk (bare brikkene til den som har tur), markerer lovlige trekk og kongen i sjakk, viser status, trekklister og resultat, spør om brikke ved bondeforvandling og har en knapp for nytt parti. |
 | `ChessApp` | JavaFX-oppstart. |
 
 Ressurser (FXML og brikkebilder) ligger i `src/main/resources/Chess/`. Testene ligger i `src/test/java/Chess/ChessTest.java`.
@@ -50,17 +50,13 @@ Ressurser (FXML og brikkebilder) ligger i `src/main/resources/Chess/`. Testene l
 - **`setBrukt()`** brukes av `Pawn` (dobbelsteg) og av `King` og `Rook` (rokade). Andre brikker har tomme implementasjoner.
 - **En passant:** `Board` husker ruten en bonde hoppet over (`enPassantRute`), og `ChessGame.Move` setter den etter hvert trekk. `Pawn.erEnPassant` avgjør om et slag er en passant, og `ChessGame.slåttRute` finner bonden som skal fjernes, både ved selve trekket og når trekket prøves i sjakksjekken.
 - **Rokade** genereres i `ChessGame.rokadeTrekk`, ikke i `King.lovligetrekk`. Ellers ville angrepssjekken (`Board.erAngrepet`) kalt seg selv i det uendelige.
-- **`Brikke.getlovligetrekk`-feltet** i superklassen brukes ikke; alle subklasser overstyrer `getlovligetrekk()`.
 - **Spillslutt:** etter hvert trekk sjekker `ChessGame` om den som har tur har lovlige trekk. Ingen trekk og i sjakk gir sjakkmatt, ingen trekk uten sjakk gir patt (remis, `getWinner()` er `null`).
-- **Kontrolleren** kaller `lovligetrekk` direkte for å markere ruter. Når trekkvalidering (f.eks. at egen konge ikke kan stå i sjakk) flyttes inn i `ChessGame`, må markeringen bruke samme logikk.
-- `ChessGame.gameOver` og `fileHandler` er `public` og brukes direkte av kontrolleren.
+- **Lovlige trekk:** bruk alltid `ChessGame.lovligeTrekk(fra)`, ikke brikkens `lovligetrekk`. Bare `ChessGame` fjerner trekk som setter egen konge i sjakk og legger til rokade. Både `Move` og markeringen i kontrolleren bruker den.
+- **Bondeforvandling:** `Move(fra, til)` gir dronning. `Move(fra, til, forvandling)` tar `"Queen"`, `"Rook"`, `"Bishop"` eller `"Horse"`. Ugyldig valg (også `null`) gir `IllegalArgumentException`.
+- **Testoppsett:** bruk `Board.tomtBrett()` og `settBrikke(...)`, og `new ChessGame(brett)`. Hvit har alltid første trekk.
 
-## Det som mangler for full sjakk
+## Status
 
-1. Sjakk: et trekk er ulovlig hvis det etterlater egen konge i sjakk
-2. Sjakkmatt og patt som avslutter spillet (i stedet for at kongen slås)
-3. Rokade (kort og lang)
-4. En passant
-5. Bondeforvandling
+Alle reglene for full sjakk er på plass: sjakk, sjakkmatt, patt, rokade, en passant og bondeforvandling. Se `PLAN.md` for hva som gjenstår.
 
 Andre remisregler enn patt (50-trekksregelen, trekkgjentakelse, utilstrekkelig materiale) skal ikke implementeres.

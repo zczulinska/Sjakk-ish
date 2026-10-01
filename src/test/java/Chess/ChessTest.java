@@ -584,6 +584,7 @@ public class ChessTest {
         Board tomt = promotionBoard();
         ChessGame customGame = new ChessGame(tomt);
         assertThrows(IllegalArgumentException.class, () -> customGame.Move(new Position(6,4), new Position(7,4), "King"));
+        assertThrows(IllegalArgumentException.class, () -> customGame.Move(new Position(6,4), new Position(7,4), null));
         assertEquals(Pawn.class, tomt.getBrikke(new Position(6,4)).getClass()); //ingenting er flyttet
         assertEquals("W", customGame.getTurn());
     }
@@ -601,6 +602,113 @@ public class ChessTest {
         ChessGame customGame = new ChessGame(promotionBoard());
         assertTrue(customGame.Move(new Position(6,4), new Position(7,4), "Horse"));
         assertEquals("E7->E8=S" + System.lineSeparator(), Files.readString(Path.of("data","Trekkhvit.txt")));
+    }
+
+    private List<Position> trekkPåBrett(Board brett, Brikke brikke){ //setter brikken ut og henter brikkens egne trekk
+        brett.settBrikke(brikke);
+        brikke.lovligetrekk(brett);
+        return brikke.getlovligetrekk();
+    }
+
+    @Test
+    void horseMoves(){
+        assertEquals(8, trekkPåBrett(Board.tomtBrett(), new Horse("W", new Position(3,3))).size()); //midt på brettet
+
+        List<Position> hjørne = trekkPåBrett(Board.tomtBrett(), new Horse("W", new Position(0,0)));
+        assertEquals(2, hjørne.size());
+        assertTrue(hjørne.contains(new Position(2,1)));
+        assertTrue(hjørne.contains(new Position(1,2)));
+    }
+
+    @Test
+    void horseCanTakeEnemyButNotOwnPiece(){
+        Board tomt = Board.tomtBrett();
+        tomt.settBrikke(new Pawn("W", new Position(2,1)));
+        tomt.settBrikke(new Pawn("B", new Position(1,2)));
+        List<Position> trekk = trekkPåBrett(tomt, new Horse("W", new Position(0,0)));
+        assertEquals(List.of(new Position(1,2)), trekk);
+    }
+
+    @Test
+    void bishopMoves(){
+        assertEquals(13, trekkPåBrett(Board.tomtBrett(), new Bishop("W", new Position(3,3))).size());
+
+        Board tomt = Board.tomtBrett();
+        tomt.settBrikke(new Pawn("W", new Position(5,5))); //egen brikke stopper løperen før ruten
+        tomt.settBrikke(new Pawn("B", new Position(1,1))); //motstander kan slås, men ikke hoppes over
+        List<Position> trekk = trekkPåBrett(tomt, new Bishop("W", new Position(3,3)));
+        assertTrue(trekk.contains(new Position(4,4)));
+        assertFalse(trekk.contains(new Position(5,5)));
+        assertFalse(trekk.contains(new Position(6,6)));
+        assertTrue(trekk.contains(new Position(1,1)));
+        assertFalse(trekk.contains(new Position(0,0)));
+        assertFalse(trekk.contains(new Position(3,4))); //ikke rett frem
+    }
+
+    @Test
+    void rookMoves(){
+        assertEquals(14, trekkPåBrett(Board.tomtBrett(), new Rook("W", new Position(3,3))).size());
+
+        Board tomt = Board.tomtBrett();
+        tomt.settBrikke(new Pawn("W", new Position(3,5)));
+        tomt.settBrikke(new Pawn("B", new Position(1,3)));
+        List<Position> trekk = trekkPåBrett(tomt, new Rook("W", new Position(3,3)));
+        assertTrue(trekk.contains(new Position(3,4)));
+        assertFalse(trekk.contains(new Position(3,5)));
+        assertFalse(trekk.contains(new Position(3,6)));
+        assertTrue(trekk.contains(new Position(1,3)));
+        assertFalse(trekk.contains(new Position(0,3)));
+        assertFalse(trekk.contains(new Position(4,4))); //ikke skrått
+    }
+
+    @Test
+    void queenMoves(){
+        List<Position> trekk = trekkPåBrett(Board.tomtBrett(), new Queen("W", new Position(3,3)));
+        assertEquals(27, trekk.size()); //14 som tårn + 13 som løper
+        assertTrue(trekk.contains(new Position(7,7)));
+        assertTrue(trekk.contains(new Position(3,0)));
+        assertFalse(trekk.contains(new Position(5,4))); //ikke springertrekk
+    }
+
+    @Test
+    void kingMoves(){
+        assertEquals(8, trekkPåBrett(Board.tomtBrett(), new King("W", new Position(3,3))).size());
+        assertEquals(3, trekkPåBrett(Board.tomtBrett(), new King("W", new Position(0,0))).size());
+
+        Board tomt = Board.tomtBrett();
+        tomt.settBrikke(new Pawn("W", new Position(1,1)));
+        List<Position> trekk = trekkPåBrett(tomt, new King("W", new Position(0,0)));
+        assertFalse(trekk.contains(new Position(1,1))); //egen brikke
+        assertEquals(2, trekk.size());
+    }
+
+    @Test
+    void pawnMoves(){
+        List<Position> start = trekkPåBrett(Board.tomtBrett(), new Pawn("W", new Position(1,4)));
+        assertEquals(2, start.size()); //ett eller to steg frem
+        assertTrue(start.contains(new Position(2,4)));
+        assertTrue(start.contains(new Position(3,4)));
+
+        Board sperret = Board.tomtBrett();
+        sperret.settBrikke(new Pawn("B", new Position(2,4)));
+        assertTrue(trekkPåBrett(sperret, new Pawn("W", new Position(1,4))).isEmpty()); //kan ikke hoppe over
+
+        Board slag = Board.tomtBrett();
+        slag.settBrikke(new Pawn("B", new Position(4,3)));
+        slag.settBrikke(new Pawn("W", new Position(4,5)));
+        slag.settBrikke(new Pawn("B", new Position(4,4))); //rett foran, kan ikke slås
+        List<Position> trekk = trekkPåBrett(slag, new Pawn("W", new Position(3,4)));
+        assertTrue(trekk.contains(new Position(4,3))); //slår motstander skrått
+        assertFalse(trekk.contains(new Position(4,5))); //ikke egen brikke
+        assertFalse(trekk.contains(new Position(4,4)));
+    }
+
+    @Test
+    void blackPawnMovesDown(){
+        List<Position> start = trekkPåBrett(Board.tomtBrett(), new Pawn("B", new Position(6,2)));
+        assertTrue(start.contains(new Position(5,2)));
+        assertTrue(start.contains(new Position(4,2)));
+        assertEquals(2, start.size());
     }
 
 }

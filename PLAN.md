@@ -92,6 +92,15 @@ Endringer som ikke var med i den opprinnelige planen, men som ble foreslått av 
 - [x] **Snu brettet slik at hvit står nederst** (etter steg 11)
   - Med standard notasjon var brettet speilvendt: hvit sto øverst med A-kolonnen til venstre.
   - Bare visningen i `ChessController` er endret, modellen og koordinatene er de samme.
+- [x] **Gjennomgang av koden og opprydding** (etter steg 11)
+  - `Move` med `null` som forvandling gir nå `IllegalArgumentException` i stedet for å krasje.
+  - `gameOver` og `fileHandler` i `ChessGame` er gjort `private`.
+  - Ubrukt kode er fjernet: `lesTrekk`, `getboard()`, feltet i `Brikke` og utkommentert kode i `Queen`, `Bishop` og `Rook`.
+  - CLAUDE.md er oppdatert.
+- [x] **Knapp for nytt parti**
+  - Siden bare patt er med som remisregel, kan for eksempel konge mot konge aldri ta slutt. Med en knapp for nytt parti slipper spillerne å lukke appen.
+- [x] **Tester for enkeltbrikkenes trekk**
+  - Dronning, løper, springer og konge testes i dag bare indirekte. For eksempel: springeren har 8 trekk midt på et tomt brett og 2 i hjørnet.
 
 ## Avklaringer
 
