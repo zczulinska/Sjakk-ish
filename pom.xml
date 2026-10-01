@@ -4,11 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
  
     <groupId>TDT4100_project</groupId>
-    <artifactId>sjakk-ish</artifactId>
+    <artifactId>sjakk-link</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
  
-    <name>sjakk-ish</name>
+    <name>sjakk-link</name>
 	
 
    <dependencies>
@@ -67,9 +67,9 @@
 				<noHeaderFiles>true</noHeaderFiles>
 				<stripDebug>true</stripDebug>
 				<noManPages>true</noManPages>
-				<launcher>sjakk-ish</launcher>
-				<jlinkImageName>sjakk-ish</jlinkImageName>
-				<jlinkZipName>sjakk-ish</jlinkZipName>
+				<launcher>sjakk-link</launcher>
+				<jlinkImageName>sjakk-link</jlinkImageName>
+				<jlinkZipName>sjakk-link</jlinkZipName>
 			</configuration>
 	    </plugin>
 
