@@ -73,8 +73,9 @@ Med standard notasjon blir det `B1->C3`. Testene ville da sjekke en notasjon vi 
 - [x] **Steg 10: Bondeforvandling i grafikken**
   - En dialog lar spilleren velge mellom dronning, tårn, løper og springer.
 
-- [ ] **Steg 11: Standard notasjon**
+- [x] **Steg 11: Standard notasjon**
   - `finnPosisjon` endres slik at hvit står på rad 1 og 2. De to testene nevnt over oppdateres.
+  - Bondeforvandling skrives med norsk bokstav etter trekket, for eksempel `E7->E8=D`.
 
 - [ ] **Steg 12: Oppdatere README**
   - README beskriver Sjakk-link og de nye reglene.
@@ -88,6 +89,9 @@ Endringer som ikke var med i den opprinnelige planen, men som ble foreslått av 
 - [x] **Farge kongens rute rød når den står i sjakk**
   - `Board` får `finnKonge(farge)`, som også brukes av `erISjakk`.
   - Ruten forblir rød etter sjakkmatt, så man ser hvilken konge som ble satt matt.
+- [x] **Snu brettet slik at hvit står nederst** (etter steg 11)
+  - Med standard notasjon var brettet speilvendt: hvit sto øverst med A-kolonnen til venstre.
+  - Bare visningen i `ChessController` er endret, modellen og koordinatene er de samme.
 
 ## Avklaringer
 

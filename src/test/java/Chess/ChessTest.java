@@ -89,12 +89,14 @@ public class ChessTest {
     }
 
     @Test
-    void positionToCoordinate(){
+    void positionToCoordinate(){ //standard notasjon: hvits bakerste rad (row 0) er rad 1
         ChessFileHandler fileHandler = new ChessFileHandler();
-        assertEquals(fileHandler.finnPosisjon(new Position(4,6)), "G4");
-        assertEquals(fileHandler.finnPosisjon(new Position(0,0)), "A8");
-        assertEquals(fileHandler.finnPosisjon(new Position(0,7)), "H8");
-        assertEquals(fileHandler.finnPosisjon(new Position(5,4)), "E3");
+        assertEquals(fileHandler.finnPosisjon(new Position(4,6)), "G5");
+        assertEquals(fileHandler.finnPosisjon(new Position(0,0)), "A1");
+        assertEquals(fileHandler.finnPosisjon(new Position(0,7)), "H1");
+        assertEquals(fileHandler.finnPosisjon(new Position(5,4)), "E6");
+        assertEquals(fileHandler.finnPosisjon(new Position(0,4)), "E1"); //hvit konge
+        assertEquals(fileHandler.finnPosisjon(new Position(7,3)), "D8"); //svart dronning
     } 
 
     @Test
@@ -106,14 +108,14 @@ public class ChessTest {
         game.Move(new Position(6,3 ), new Position(5, 3));
 
         String innhold = Files.readString(path1);
-        assertEquals("B8->C6" + System.lineSeparator(), innhold);   
+        assertEquals("B1->C3" + System.lineSeparator(), innhold); //hvit springer
 
         String innhold2 = Files.readString(path2);
-        assertEquals("D2->D3"+ System.lineSeparator(),innhold2);
+        assertEquals("D7->D6"+ System.lineSeparator(),innhold2); //svart bonde
 
         game.Move(new Position(0, 1), new Position(2, 2));
         String innhold3 = Files.readString(path1);
-        assertEquals("B8->C6" + System.lineSeparator(), innhold3); 
+        assertEquals("B1->C3" + System.lineSeparator(), innhold3); 
         
 
 
@@ -592,6 +594,13 @@ public class ChessTest {
         assertTrue(customGame.erBondeforvandling(new Position(6,4), new Position(7,4)));
         assertFalse(customGame.erBondeforvandling(new Position(0,0), new Position(1,0))); //konge
         assertFalse(game.erBondeforvandling(new Position(1,4), new Position(2,4))); //vanlig bondetrekk
+    }
+
+    @Test
+    void promotionIsWrittenToFile() throws IOException{
+        ChessGame customGame = new ChessGame(promotionBoard());
+        assertTrue(customGame.Move(new Position(6,4), new Position(7,4), "Horse"));
+        assertEquals("E7->E8=S" + System.lineSeparator(), Files.readString(Path.of("data","Trekkhvit.txt")));
     }
 
 }

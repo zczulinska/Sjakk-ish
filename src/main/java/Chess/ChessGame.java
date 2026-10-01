@@ -245,7 +245,7 @@ public class ChessGame implements ChessRules{
         }
 
         try {
-        fileHandler.skrivTrekk(fra, til, color);
+        fileHandler.skrivTrekk(fra, til, color, blirForvandlet ? forvandling : null);
         } catch (Exception e) {e.printStackTrace();} //skriver ut hva som gikk galt
 
         PlayerTurnChange();

@@ -45,7 +45,7 @@ Ressurser (FXML og brikkebilder) ligger i `src/main/resources/Chess/`. Testene l
 
 ## Konvensjoner og særegenheter å kjenne til
 
-- **Koordinater:** `row 0` er hvit bakerste rad (vises øverst i GUI), `row 7` er svart. Hvite bønder går mot økende `row`. `finnPosisjon` mapper `row 0 → "8"` og `col 0 → "A"`, så hvite trekk logges med svarts rader (f.eks. hvit springer `B8->C6`). Dette er ikke standard notasjon; testen `move_writeToFile` avhenger av det.
+- **Koordinater:** `row 0` er hvit bakerste rad (tegnes nederst i GUI, `ChessController` bruker `7 - rad`), `row 7` er svart. Hvite bønder går mot økende `row`. `finnPosisjon` gir standard notasjon: `col 0 → "A"`, `row 0 → "1"`. Trekk logges som `E2->E4`, og bondeforvandling får norsk bokstav etter seg (`E7->E8=D`).
 - **Trekkgenerering:** brikkene lager posisjoner med `new Position(...)` og fanger `IllegalArgumentException` for å hoppe over ruter utenfor brettet.
 - **`setBrukt()`** brukes av `Pawn` (dobbelsteg) og av `King` og `Rook` (rokade). Andre brikker har tomme implementasjoner.
 - **En passant:** `Board` husker ruten en bonde hoppet over (`enPassantRute`), og `ChessGame.Move` setter den etter hvert trekk. `Pawn.erEnPassant` avgjør om et slag er en passant, og `ChessGame.slåttRute` finner bonden som skal fjernes, både ved selve trekket og når trekket prøves i sjakksjekken.

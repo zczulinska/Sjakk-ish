@@ -87,7 +87,7 @@ private TextArea blackMovesArea;
 
                 rute.setOnMouseClicked(e -> håndterKlikk(pos)); //det som skjer når ruten blir klikket
 
-                chessBoard.add(rute, kolonne, rad); //legge ruten i riktg kolonne og rad
+                chessBoard.add(rute, kolonne, 7 - rad); //rad 0 (hvits bakerste rad) tegnes nederst, slik hvit ser brettet
             }
         }
     }
