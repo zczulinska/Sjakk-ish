@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.List;
 
 
 public class ChessFileHandler {
@@ -13,6 +12,10 @@ public class ChessFileHandler {
     private final Path filSvart = Path.of("data", "Trekksvart.txt");
 
     public void skrivTrekk(Position fra, Position til, String color) throws IOException {
+        skrivTrekk(fra, til, color, null);
+    }
+
+    public void skrivTrekk(Position fra, Position til, String color, String forvandling) throws IOException { //forvandling er null hvis trekket ikke er en bondeforvandling
         Files.createDirectories(filHvit.getParent());
 
         Path fil;
@@ -24,54 +27,35 @@ public class ChessFileHandler {
 
         Files.writeString(
             fil,
-            fraPosisjontilTekst(fra, til) + System.lineSeparator(),
+            fraPosisjontilTekst(fra, til) + forvandlingTekst(forvandling) + System.lineSeparator(),
             StandardOpenOption.CREATE,
             StandardOpenOption.APPEND
         );
     }
 
-    public String lesTrekk(Path fil){
-        StringBuilder ut = new StringBuilder();
-        try{
-            List<String> innhold = Files.readAllLines(fil);
-            for(String line : innhold){
-                ut.append(line).append("\n");
-            }
-            return ut.toString();}
-        catch(IOException e){
-            e.printStackTrace();
-            return "";}
-        
-    }
-    
     public void nullstillFiler() throws IOException {
         Files.createDirectories(filHvit.getParent());
         Files.writeString(filHvit, "");
         Files.writeString(filSvart, "");
     }
 
-    public String finnPosisjon(Position pos){
-        String row = "";
-        String col = "";
-        if(pos.getcol()==0){col = "A";}
-        if(pos.getcol()==1){col = "B";}
-        if(pos.getcol()==2){col = "C";}
-        if(pos.getcol()==3){col = "D";}
-        if(pos.getcol()==4){col = "E";}
-        if(pos.getcol()==5){col = "F";}
-        if(pos.getcol()==6){col = "G";}
-        if(pos.getcol()==7){col = "H";}
-    
-        if(pos.getrow() == 0){row = "8";}
-        if(pos.getrow() == 1){row = "7";}
-        if(pos.getrow() == 2){row = "6";}
-        if(pos.getrow() == 3){row = "5";}
-        if(pos.getrow() == 4){row = "4";}
-        if(pos.getrow() == 5){row = "3";}
-        if(pos.getrow() == 6){row = "2";}
-        if(pos.getrow() == 7){row = "1";}
-
+    public String finnPosisjon(Position pos){ //standard notasjon: kolonne 0 er A, row 0 (hvits bakerste rad) er 1
+        String col = String.valueOf((char) ('A' + pos.getcol()));
+        String row = String.valueOf(pos.getrow() + 1);
         return col+row;
+    }
+
+    private String forvandlingTekst(String forvandling){ //norske bokstaver: =D, =T, =L eller =S
+        if(forvandling == null){
+            return "";
+        }
+        switch(forvandling){
+            case "Queen": return "=D";
+            case "Rook": return "=T";
+            case "Bishop": return "=L";
+            case "Horse": return "=S";
+            default: return "";
+        }
     }
 
     private String fraPosisjontilTekst(Position fra, Position til){

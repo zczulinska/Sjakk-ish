@@ -4,9 +4,24 @@ package Chess;
 public class Board {
 
     private Brikke[][] board = new Brikke[8][8]; //Array med 8x8 ruter 
+    private Position enPassantRute; //ruten en bonde hoppet over i forrige trekk, null hvis ingen
 
     public Board(){
-        settOppBrikker();
+        this(true);
+    }
+
+    private Board(boolean medBrikker){
+        if(medBrikker){
+            settOppBrikker();
+        }
+    }
+
+    public static Board tomtBrett(){ //brett uten brikker, brukes for å sette opp egne stillinger
+        return new Board(false);
+    }
+
+    public void settBrikke(Brikke brikke){ //setter brikken på ruten den selv har som posisjon
+        board[brikke.getPosition().getrow()][brikke.getPosition().getcol()] = brikke;
     }
 
     private void settOppBrikker() {
@@ -37,12 +52,64 @@ public class Board {
             board[7][7] = new Rook("B",new Position(7,7));
     }
     
-    public Brikke[][] getboard(){
-        return board;
-    }
-    
     public Brikke getBrikke(Position position){
         return(board[position.getrow()][position.getcol()]);
+    }
+
+    public void fjernBrikke(Position position){
+        board[position.getrow()][position.getcol()] = null;
+    }
+
+    public Position getEnPassantRute(){
+        return enPassantRute;
+    }
+
+    public void setEnPassantRute(Position rute){
+        this.enPassantRute = rute;
+    }
+
+    public boolean erAngrepet(Position rute, String angriperFarge){ //sjekker om en brikke av angriperFarge kan slå på ruten
+        for(int row=0; row<8; row++){
+            for(int col=0; col<8; col++){
+                Brikke brikke = board[row][col];
+                if(brikke == null || !brikke.getColor().equals(angriperFarge)){
+                    continue;
+                }
+                if(brikke instanceof Pawn pawn){ //bondens vanlige trekk går rett frem, men den angriper skrått
+                    if(pawn.angriper(rute)){
+                        return true;
+                    }
+                }
+                else{
+                    brikke.lovligetrekk(this);
+                    if(brikke.getlovligetrekk().contains(rute)){
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public Position finnKonge(String farge){ //posisjonen til kongen med denne fargen, eller null
+        for(int row=0; row<8; row++){
+            for(int col=0; col<8; col++){
+                Brikke brikke = board[row][col];
+                if(brikke instanceof King && brikke.getColor().equals(farge)){
+                    return brikke.getPosition();
+                }
+            }
+        }
+        return null;
+    }
+
+    public boolean erISjakk(String farge){ //sjekker om kongen med denne fargen står i sjakk
+        Position konge = finnKonge(farge);
+        if(konge == null){
+            return false; //ingen konge på brettet
+        }
+        String motstander = "W".equals(farge) ? "B" : "W";
+        return erAngrepet(konge, motstander);
     }
 
     public void movePiece(Position fra, Position til){

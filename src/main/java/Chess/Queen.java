@@ -164,46 +164,6 @@ public class Queen extends Brikke{
             }
             catch(IllegalArgumentException e){}
         }
-
-        
-
-        // for(int i=-7;i<8;i++){
-        //     if(i==0){continue;}
-        //     try{
-        //         //skrå høyre 
-        //         Position mulig = new Position(getPosition().getrow()+i,getPosition().getcol()+i);
-        //         muligetrekk.add(mulig);
-        //     }
-        //     catch (IllegalArgumentException e){}
-
-        //     try{
-        //         //skrå venstre
-        //         Position mulig = new Position(getPosition().getrow()+i,getPosition().getcol()-i);
-        //         muligetrekk.add(mulig);
-        //     }
-        //     catch (IllegalArgumentException e){}
-        // }
-
-        // for(int i=0; i<8;i++){//vannrett først
-        //         if(i==getPosition().getcol()){
-        //             continue;
-        //         }
-        //         else {
-        //             Position mulig = new Position(getPosition().getrow(),i);
-        //             muligetrekk.add(mulig);
-        //         }
-        //     }
-        //     for(int i=0; i<8;i++){//loddrett 
-        //         if(i==getPosition().getrow()){
-        //             continue;
-        //         }
-        //         else {
-        //             Position mulig = new Position(i,getPosition().getcol());
-        //             muligetrekk.add(mulig);
-        //         }
-        // }
-
-        
     }
 
 

@@ -5,6 +5,7 @@ import java.util.List;
 
 public class Rook extends Brikke{
 
+    private boolean brukt; //har flyttet, brukes for rokade
     private List<Position> muligetrekk=new ArrayList<>();
 
     public Rook(String color, Position position){
@@ -91,24 +92,6 @@ public class Rook extends Brikke{
             catch(IllegalArgumentException e){}
         }
         
-        //     for(int i=0; i<8;i++){//vannrett først
-        //         if(i==getPosition().getcol()){
-        //             continue;
-        //         }
-        //         else {
-        //             Position mulig = new Position(getPosition().getrow(),i);
-        //             muligetrekk.add(mulig);
-        //         }
-        //     }
-        //     for(int i=0; i<8;i++){//loddrett 
-        //         if(i==getPosition().getrow()){
-        //             continue;
-        //         }
-        //         else {
-        //             Position mulig = new Position(i,getPosition().getcol());
-        //             muligetrekk.add(mulig);
-        //         }
-        // }
     }
 
     @Override
@@ -126,6 +109,11 @@ public class Rook extends Brikke{
 
     @Override
     public void setBrukt() {
+        this.brukt=true;
+    }
+
+    public boolean getBrukt(){
+        return brukt;
     }
 
 }

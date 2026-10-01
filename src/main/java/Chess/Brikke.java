@@ -6,7 +6,6 @@ public abstract class Brikke {
 
     private String color;
     private Position position;
-    private List<Position> getlovligetrekk;
 
     public Brikke(String color,Position position) {
         if(!"W".equals(color) && !"B".equals(color)){throw new IllegalArgumentException("Det er ikke gyldig farge");}
@@ -26,9 +25,7 @@ public abstract class Brikke {
         return position;
     }
 
-    public List<Position> getlovligetrekk(){
-        return this.getlovligetrekk;
-    }
+    public abstract List<Position> getlovligetrekk();
 
     public abstract void lovligetrekk(Board board); 
 

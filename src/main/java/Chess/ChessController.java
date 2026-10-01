@@ -1,6 +1,9 @@
 package Chess;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 
 import javafx.fxml.FXML;
@@ -10,6 +13,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
@@ -22,6 +26,9 @@ private VBox gameOverBox;
 
 @FXML
 private Label winnerLabel;
+
+@FXML
+private Label statusLabel;
     @FXML
     private GridPane chessBoard;
 
@@ -36,13 +43,24 @@ private TextArea blackMovesArea;
 
     @FXML
     public void initialize() {
+        nyttParti();
+    }
+
+    @FXML
+    private void nyttParti() {
+        // starter et nytt spill fra startstillingen, trekkfilene nullstilles av ChessGame
         game = new ChessGame();
+        valgtPosisjon = null;
+        gameOverBox.setVisible(false);
         tegnBrett();
         oppdaterTrekkVisning();
+        oppdaterStatus();
     }
 
     private void tegnBrett() {
         chessBoard.getChildren().clear();
+        List<Position> markerte = markerteRuter(); //regnes ut én gang per tegning, ikke for hver rute
+        Position kongeISjakk = game.erSjakk() ? game.getBoard().finnKonge(game.getTurn()) : null;
 
         for (int rad = 0; rad < 8; rad++) {
             for (int kolonne = 0; kolonne <8 ; kolonne++) {
@@ -52,8 +70,10 @@ private TextArea blackMovesArea;
 
                 Rectangle bakgrunn = new Rectangle( 80,80);
 
-                if (erMarkert(pos)) {
+                if (markerte.contains(pos)) {
                     bakgrunn.setFill(Color.YELLOWGREEN);
+                } else if (pos.equals(kongeISjakk)) {
+                    bakgrunn.setFill(Color.INDIANRED);
                 } else if ((rad + kolonne) % 2 == 0) {
                     bakgrunn.setFill(Color.DARKSLATEGREY);
                 } else {
@@ -75,7 +95,7 @@ private TextArea blackMovesArea;
 
                 rute.setOnMouseClicked(e -> håndterKlikk(pos)); //det som skjer når ruten blir klikket
 
-                chessBoard.add(rute, kolonne, rad); //legge ruten i riktg kolonne og rad
+                chessBoard.add(rute, kolonne, 7 - rad); //rad 0 (hvits bakerste rad) tegnes nederst, slik hvit ser brettet
             }
         }
     }
@@ -86,8 +106,8 @@ private TextArea blackMovesArea;
 
     if (valgtPosisjon == null) { 
         // hvis ingen rute er valgt fra før
-        if (brikke != null) { 
-            // hvis ruten faktisk har en brikke
+        if (erEgenBrikke(brikke)) { 
+            // hvis ruten har en brikke som tilhører den som har tur
             valgtPosisjon = pos; 
             // velg denne ruten
         }
@@ -100,14 +120,25 @@ private TextArea blackMovesArea;
             // fjern valget
         } else {
             // hvis brukeren klikker på en annen rute
-            boolean flyttet = game.Move(valgtPosisjon, pos);
+            boolean flyttet;
+            if (game.erBondeforvandling(valgtPosisjon, pos) && game.lovligeTrekk(valgtPosisjon).contains(pos)) {
+                // bonden når siste rad, spilleren velger hva den skal bli
+                Optional<String> valg = velgForvandling();
+                if (valg.isEmpty()) {
+                    // spilleren avbrøt, bonden forblir valgt og ingenting flyttes
+                    tegnBrett();
+                    return;
+                }
+                flyttet = game.Move(valgtPosisjon, pos, valg.get());
+            } else {
+                flyttet = game.Move(valgtPosisjon, pos);
+            }
             if(flyttet){
                 oppdaterTrekkVisning();
+                oppdaterStatus();
                 valgtPosisjon = null;
-                if (game.gameOver) {
-            visGameOverTekst();
-}
-            } else if (brikke != null){
+            } else if (erEgenBrikke(brikke)){
+                // ugyldig trekk, men brukeren klikket på en annen av sine egne brikker
                 valgtPosisjon = pos;
             } else { valgtPosisjon = null;}
     }
@@ -117,33 +148,57 @@ private TextArea blackMovesArea;
     // tegn hele brettet på nytt så markeringene oppdateres på skjermen
 }
 
-private boolean erMarkert(Position pos) {
+private Optional<String> velgForvandling() {
+    // norsk navn i dialogen, klassenavnet som ChessGame forventer
+    Map<String, String> brikker = new LinkedHashMap<>();
+    brikker.put("Dronning", "Queen");
+    brikker.put("Tårn", "Rook");
+    brikker.put("Løper", "Bishop");
+    brikker.put("Springer", "Horse");
+
+    ChoiceDialog<String> dialog = new ChoiceDialog<>("Dronning", brikker.keySet());
+    dialog.setTitle("Bondeforvandling");
+    dialog.setHeaderText("Bonden har nådd siste rad");
+    dialog.setContentText("Velg ny brikke:");
+    return dialog.showAndWait().map(brikker::get);
+}
+
+private boolean erEgenBrikke(Brikke brikke) {
+    // bare brikkene til den som har tur kan velges
+    return brikke != null && brikke.getColor().equals(game.getTurn());
+}
+
+private List<Position> markerteRuter() {
     if (valgtPosisjon == null) {
         // hvis ingen brikke er valgt, skal ingen ruter markeres
-        return false;
+        return List.of();
     }
 
-    Brikke valgtBrikke = game.getBoard().getBrikke(valgtPosisjon); 
-    // henter brikken som står på den valgte ruten
+    return game.lovligeTrekk(valgtPosisjon);
+    // spillet regner ut hvilke trekk som er lovlige, også at egen konge ikke havner i sjakk
+}
 
-    if (valgtBrikke == null) {
-        // sikkerhetssjekk: hvis valgt rute ikke har brikke likevel
-        return false;
+private void oppdaterStatus() {
+    if (game.isGameOver()) {
+        statusLabel.setText("Spillet er over");
+        visGameOverTekst();
+        return;
     }
-
-    valgtBrikke.lovligetrekk(game.getBoard()); 
-    // ber brikken regne ut hvilke trekk som er lovlige
-
-    List<Position> trekk = valgtBrikke.getlovligetrekk(); 
-    // henter lista med lovlige ruter
-
-    return trekk.contains(pos); 
-    // returnerer true hvis denne ruten er en av de lovlige trekkene
+    String spiller = game.getTurn().equals("W") ? "Hvit" : "Svart";
+    if (game.erSjakk()) {
+        statusLabel.setText("Sjakk! " + spiller + " sin tur");
+    } else {
+        statusLabel.setText(spiller + " sin tur");
+    }
 }
 
 private void visGameOverTekst() {
-    String vinner = game.getTurn().equals("W") ? "Svart vant" : "Hvit vant";
-    winnerLabel.setText(vinner);
+    if (game.erPatt()) {
+        winnerLabel.setText("Remis (patt)");
+    } else {
+        String vinner = game.getWinner().equals("W") ? "Hvit" : "Svart";
+        winnerLabel.setText(vinner + " vant ved sjakkmatt");
+    }
     gameOverBox.setVisible(true);
 }
 

@@ -58,7 +58,7 @@ public class Pawn extends Brikke{
         if("B".equals(getColor())){
         try{
         Position offer1 = new Position(getPosition().getrow()-1,getPosition().getcol()+1);
-        if(board.getBrikke(offer1) != null && !getColor().equals(board.getBrikke(offer1).getColor())){
+        if(kanSlå(board, offer1)){
             muligetrekk.add(offer1);
         }
         }
@@ -66,7 +66,7 @@ public class Pawn extends Brikke{
 
         try{
         Position offer2 = new Position(getPosition().getrow()-1,getPosition().getcol()-1);
-        if(board.getBrikke(offer2) != null && !getColor().equals(board.getBrikke(offer2).getColor())){
+        if(kanSlå(board, offer2)){
             muligetrekk.add(offer2);
         }
         }
@@ -75,7 +75,7 @@ public class Pawn extends Brikke{
     else{
         try{
         Position offer1 = new Position(getPosition().getrow()+1,getPosition().getcol()+1);
-        if(board.getBrikke(offer1) != null && !getColor().equals(board.getBrikke(offer1).getColor())){
+        if(kanSlå(board, offer1)){
             muligetrekk.add(offer1);
         }
         }
@@ -83,7 +83,7 @@ public class Pawn extends Brikke{
 
         try{
         Position offer2 = new Position(getPosition().getrow()+1,getPosition().getcol()-1);
-        if(board.getBrikke(offer2) != null && !getColor().equals(board.getBrikke(offer2).getColor())){
+        if(kanSlå(board, offer2)){
             muligetrekk.add(offer2);
         }
         }
@@ -92,6 +92,28 @@ public class Pawn extends Brikke{
 
     }
     
+
+    private boolean kanSlå(Board board, Position offer){ //motstanderbrikke på ruten, eller en passant
+        Brikke brikke = board.getBrikke(offer);
+        if(brikke != null){
+            return !getColor().equals(brikke.getColor());
+        }
+        return erEnPassant(board, offer);
+    }
+
+    public boolean erEnPassant(Board board, Position offer){ //ruten er den en motstanderbonde akkurat hoppet over med dobbelsteg
+        if(!offer.equals(board.getEnPassantRute())){
+            return false;
+        }
+        Brikke vedSiden = board.getBrikke(new Position(getPosition().getrow(), offer.getcol())); //bonden som slås står ved siden av
+        return vedSiden instanceof Pawn && !getColor().equals(vedSiden.getColor());
+    }
+
+    public boolean angriper(Position rute){ //bonden angriper skrått fremover, også når ruten er tom
+        int retning = "W".equals(getColor()) ? 1 : -1;
+        return rute.getrow() == getPosition().getrow() + retning
+            && Math.abs(rute.getcol() - getPosition().getcol()) == 1;
+    }
 
     @Override
     public List<Position> getlovligetrekk() {
