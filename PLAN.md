@@ -50,7 +50,7 @@ Med standard notasjon blir det `B1->C3`. Testene ville da sjekke en notasjon vi 
   - Vise «Sjakk!» når kongen står i sjakk.
   - Vise «Hvit/Svart vant ved sjakkmatt» eller «Remis (patt)», lest fra `ChessGame` i stedet for å utledes fra hvem sin tur det er.
 
-- [ ] **Steg 7: Rokade**
+- [x] **Steg 7: Rokade**
   - `King` og `Rook` får ekte `setBrukt()`.
   - Kongen kan rokere når:
     - verken konge eller tårn har flyttet,

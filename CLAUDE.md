@@ -47,7 +47,8 @@ Ressurser (FXML og brikkebilder) ligger i `src/main/resources/Chess/`. Testene l
 
 - **Koordinater:** `row 0` er hvit bakerste rad (vises øverst i GUI), `row 7` er svart. Hvite bønder går mot økende `row`. `finnPosisjon` mapper `row 0 → "8"` og `col 0 → "A"`, så hvite trekk logges med svarts rader (f.eks. hvit springer `B8->C6`). Dette er ikke standard notasjon; testen `move_writeToFile` avhenger av det.
 - **Trekkgenerering:** brikkene lager posisjoner med `new Position(...)` og fanger `IllegalArgumentException` for å hoppe over ruter utenfor brettet.
-- **`setBrukt()`** brukes bare av `Pawn` (for dobbelsteg). Andre brikker har tomme implementasjoner. Det trengs også for konge og tårn ved rokade.
+- **`setBrukt()`** brukes av `Pawn` (dobbelsteg) og av `King` og `Rook` (rokade). Andre brikker har tomme implementasjoner.
+- **Rokade** genereres i `ChessGame.rokadeTrekk`, ikke i `King.lovligetrekk`. Ellers ville angrepssjekken (`Board.erAngrepet`) kalt seg selv i det uendelige.
 - **`Brikke.getlovligetrekk`-feltet** i superklassen brukes ikke; alle subklasser overstyrer `getlovligetrekk()`.
 - **Spillslutt:** etter hvert trekk sjekker `ChessGame` om den som har tur har lovlige trekk. Ingen trekk og i sjakk gir sjakkmatt, ingen trekk uten sjakk gir patt (remis, `getWinner()` er `null`).
 - **Kontrolleren** kaller `lovligetrekk` direkte for å markere ruter. Når trekkvalidering (f.eks. at egen konge ikke kan stå i sjakk) flyttes inn i `ChessGame`, må markeringen bruke samme logikk.

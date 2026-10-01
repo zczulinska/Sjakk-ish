@@ -5,6 +5,7 @@ import java.util.List;
 
 public class Rook extends Brikke{
 
+    private boolean brukt; //har flyttet, brukes for rokade
     private List<Position> muligetrekk=new ArrayList<>();
 
     public Rook(String color, Position position){
@@ -126,6 +127,11 @@ public class Rook extends Brikke{
 
     @Override
     public void setBrukt() {
+        this.brukt=true;
+    }
+
+    public boolean getBrukt(){
+        return brukt;
     }
 
 }

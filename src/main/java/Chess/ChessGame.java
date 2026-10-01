@@ -101,12 +101,52 @@ public class ChessGame implements ChessRules{
         }
         brikke.lovligetrekk(board);
         List<Position> kandidater = new ArrayList<>(brikke.getlovligetrekk()); //kopi, siden sjakksjekken regner ut trekklister på nytt
+        if(brikke instanceof King konge){
+            kandidater.addAll(rokadeTrekk(konge)); //ligger her og ikke i King, ellers ville angrepssjekken kalt seg selv i det uendelige
+        }
         for(Position til : kandidater){
             if(!setterEgenKongeISjakk(fra, til)){
                 lovlige.add(til);
             }
         }
         return lovlige;
+    }
+
+    private List<Position> rokadeTrekk(King konge){ //rutene kongen kan rokere til
+        List<Position> trekk = new ArrayList<>();
+        String farge = konge.getColor();
+        String motstander = "W".equals(farge) ? "B" : "W";
+        int rad = konge.getPosition().getrow();
+
+        if(konge.getBrukt() || konge.getPosition().getcol() != 4 || board.erISjakk(farge)){
+            return trekk;
+        }
+
+        //kort rokade: tårnet i kolonne 7, kongen går til kolonne 6
+        if(kanRokereMed(new Position(rad, 7), farge)
+            && erTomOgTrygg(new Position(rad, 5), motstander)
+            && erTomOgTrygg(new Position(rad, 6), motstander)){
+            trekk.add(new Position(rad, 6));
+        }
+
+        //lang rokade: tårnet i kolonne 0, kongen går til kolonne 2. Rute 1 må være tom, men kan være angrepet
+        if(kanRokereMed(new Position(rad, 0), farge)
+            && board.getBrikke(new Position(rad, 1)) == null
+            && erTomOgTrygg(new Position(rad, 2), motstander)
+            && erTomOgTrygg(new Position(rad, 3), motstander)){
+            trekk.add(new Position(rad, 2));
+        }
+        return trekk;
+    }
+
+    private boolean kanRokereMed(Position tårnRute, String farge){ //står det et tårn av riktig farge som ikke har flyttet
+        return board.getBrikke(tårnRute) instanceof Rook tårn
+            && tårn.getColor().equals(farge)
+            && !tårn.getBrukt();
+    }
+
+    private boolean erTomOgTrygg(Position rute, String motstander){
+        return board.getBrikke(rute) == null && !board.erAngrepet(rute, motstander);
     }
 
     private boolean setterEgenKongeISjakk(Position fra, Position til){ //prøver trekket, sjekker sjakk og setter brettet tilbake
@@ -146,6 +186,14 @@ public class ChessGame implements ChessRules{
 
         board.movePiece(fra, til);
         brikke.setBrukt();
+
+        if(brikke instanceof King && Math.abs(til.getcol() - fra.getcol()) == 2){ //rokade, tårnet flytter også
+            int rad = fra.getrow();
+            Position tårnFra = til.getcol() == 6 ? new Position(rad, 7) : new Position(rad, 0);
+            Position tårnTil = til.getcol() == 6 ? new Position(rad, 5) : new Position(rad, 3);
+            board.movePiece(tårnFra, tårnTil);
+            board.getBrikke(tårnTil).setBrukt();
+        }
 
         try {
         fileHandler.skrivTrekk(fra, til, color);

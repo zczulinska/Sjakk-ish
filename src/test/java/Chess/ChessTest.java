@@ -342,4 +342,106 @@ public class ChessTest {
         assertEquals(null, Board.tomtBrett().finnKonge("W"));
     }
 
+    private Board castlingBoard(){ //hvit konge og begge tårn på startrutene, svart konge
+        Board tomt = Board.tomtBrett();
+        tomt.settBrikke(new King("W", new Position(0,4)));
+        tomt.settBrikke(new Rook("W", new Position(0,0)));
+        tomt.settBrikke(new Rook("W", new Position(0,7)));
+        tomt.settBrikke(new King("B", new Position(7,4)));
+        return tomt;
+    }
+
+    @Test
+    void castleShort(){
+        Board tomt = castlingBoard();
+        ChessGame customGame = new ChessGame(tomt);
+        assertTrue(customGame.Move(new Position(0,4), new Position(0,6)));
+        assertEquals(King.class, tomt.getBrikke(new Position(0,6)).getClass());
+        assertEquals(Rook.class, tomt.getBrikke(new Position(0,5)).getClass());
+        assertEquals(new Position(0,5), tomt.getBrikke(new Position(0,5)).getPosition());
+        assertEquals(null, tomt.getBrikke(new Position(0,7)));
+        assertEquals(null, tomt.getBrikke(new Position(0,4)));
+    }
+
+    @Test
+    void castleLong(){
+        Board tomt = castlingBoard();
+        ChessGame customGame = new ChessGame(tomt);
+        assertTrue(customGame.Move(new Position(0,4), new Position(0,2)));
+        assertEquals(King.class, tomt.getBrikke(new Position(0,2)).getClass());
+        assertEquals(Rook.class, tomt.getBrikke(new Position(0,3)).getClass());
+        assertEquals(null, tomt.getBrikke(new Position(0,0)));
+    }
+
+    @Test
+    void blackCanCastle(){
+        Board tomt = Board.tomtBrett();
+        tomt.settBrikke(new King("W", new Position(0,0)));
+        tomt.settBrikke(new King("B", new Position(7,4)));
+        tomt.settBrikke(new Rook("B", new Position(7,7)));
+        ChessGame customGame = new ChessGame(tomt);
+        assertTrue(customGame.Move(new Position(0,0), new Position(0,1)));
+        assertTrue(customGame.Move(new Position(7,4), new Position(7,6)));
+        assertEquals(Rook.class, tomt.getBrikke(new Position(7,5)).getClass());
+    }
+
+    @Test
+    void noCastlingAfterKingHasMoved(){
+        ChessGame customGame = new ChessGame(castlingBoard());
+        assertTrue(customGame.Move(new Position(0,4), new Position(1,4)));
+        assertTrue(customGame.Move(new Position(7,4), new Position(7,3)));
+        assertTrue(customGame.Move(new Position(1,4), new Position(0,4))); //tilbake på startruten
+        assertTrue(customGame.Move(new Position(7,3), new Position(7,4)));
+        assertFalse(customGame.lovligeTrekk(new Position(0,4)).contains(new Position(0,6)));
+        assertFalse(customGame.lovligeTrekk(new Position(0,4)).contains(new Position(0,2)));
+    }
+
+    @Test
+    void noCastlingWithMovedRook(){
+        ChessGame customGame = new ChessGame(castlingBoard());
+        assertTrue(customGame.Move(new Position(0,7), new Position(1,7)));
+        assertTrue(customGame.Move(new Position(7,4), new Position(7,3)));
+        assertTrue(customGame.Move(new Position(1,7), new Position(0,7))); //tilbake på startruten
+        assertTrue(customGame.Move(new Position(7,3), new Position(7,4)));
+        assertFalse(customGame.lovligeTrekk(new Position(0,4)).contains(new Position(0,6)));
+        assertTrue(customGame.lovligeTrekk(new Position(0,4)).contains(new Position(0,2))); //det andre tårnet har ikke flyttet
+    }
+
+    @Test
+    void noCastlingThroughPieces(){
+        Board tomt = castlingBoard();
+        tomt.settBrikke(new Bishop("W", new Position(0,5)));
+        tomt.settBrikke(new Horse("W", new Position(0,1)));
+        ChessGame customGame = new ChessGame(tomt);
+        assertFalse(customGame.lovligeTrekk(new Position(0,4)).contains(new Position(0,6)));
+        assertFalse(customGame.lovligeTrekk(new Position(0,4)).contains(new Position(0,2)));
+    }
+
+    @Test
+    void noCastlingOutOfCheck(){
+        Board tomt = castlingBoard();
+        tomt.settBrikke(new Rook("B", new Position(5,4)));
+        ChessGame customGame = new ChessGame(tomt);
+        assertFalse(customGame.lovligeTrekk(new Position(0,4)).contains(new Position(0,6)));
+        assertFalse(customGame.lovligeTrekk(new Position(0,4)).contains(new Position(0,2)));
+    }
+
+    @Test
+    void noCastlingThroughOrIntoAttackedSquare(){
+        Board tomt = castlingBoard();
+        tomt.settBrikke(new Rook("B", new Position(5,5))); //angriper ruten kongen går over ved kort rokade
+        tomt.settBrikke(new Rook("B", new Position(5,2))); //angriper ruten kongen lander på ved lang rokade
+        ChessGame customGame = new ChessGame(tomt);
+        assertFalse(customGame.lovligeTrekk(new Position(0,4)).contains(new Position(0,6)));
+        assertFalse(customGame.lovligeTrekk(new Position(0,4)).contains(new Position(0,2)));
+    }
+
+    @Test
+    void longCastlingAllowedWhenOnlyRookPathIsAttacked(){
+        Board tomt = castlingBoard();
+        tomt.settBrikke(new Rook("B", new Position(5,1))); //angriper (0,1), som bare tårnet passerer
+        ChessGame customGame = new ChessGame(tomt);
+        assertTrue(customGame.lovligeTrekk(new Position(0,4)).contains(new Position(0,2)));
+    }
+
 }
