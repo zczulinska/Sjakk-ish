@@ -66,7 +66,7 @@ Med standard notasjon blir det `B1->C3`. Testene ville da sjekke en notasjon vi 
   - Når en bonde slår en passant, fjernes den slåtte bonden.
   - Tester: lovlig en passant, at muligheten forsvinner etter ett trekk, og en passant som ville blottlagt egen konge.
 
-- [ ] **Steg 9: Bondeforvandling i modellen**
+- [x] **Steg 9: Bondeforvandling i modellen**
   - `Move` får en variant der man velger brikke. Vanlig `Move` gir dronning.
   - Tester: forvandling til dronning og til springer, og forvandling der bonden slår en brikke.
 

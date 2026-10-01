@@ -9,6 +9,10 @@ public interface ChessRules {
     
     Boolean Move(Position position, Position newposition);
 
+    Boolean Move(Position position, Position newposition, String forvandling);
+
+    boolean erBondeforvandling(Position fra, Position til);
+
     List<Position> lovligeTrekk(Position fra);
 
     Boolean isGameOver();

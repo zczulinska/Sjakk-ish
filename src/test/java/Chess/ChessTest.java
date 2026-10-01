@@ -526,4 +526,72 @@ public class ChessTest {
         assertEquals(Pawn.class, tomt.getBrikke(new Position(4,3)).getClass());
     }
 
+    private Board promotionBoard(){ //hvit bonde ett steg fra siste rad
+        Board tomt = Board.tomtBrett();
+        tomt.settBrikke(new King("W", new Position(0,0)));
+        tomt.settBrikke(new King("B", new Position(7,7)));
+        tomt.settBrikke(new Pawn("W", new Position(6,4)));
+        return tomt;
+    }
+
+    @Test
+    void promotesToQueenByDefault(){
+        Board tomt = promotionBoard();
+        ChessGame customGame = new ChessGame(tomt);
+        assertTrue(customGame.Move(new Position(6,4), new Position(7,4)));
+        Brikke ny = tomt.getBrikke(new Position(7,4));
+        assertEquals(Queen.class, ny.getClass());
+        assertEquals("W", ny.getColor());
+        assertEquals(new Position(7,4), ny.getPosition());
+    }
+
+    @Test
+    void promoteToHorse(){
+        Board tomt = promotionBoard();
+        ChessGame customGame = new ChessGame(tomt);
+        assertTrue(customGame.Move(new Position(6,4), new Position(7,4), "Horse"));
+        assertEquals(Horse.class, tomt.getBrikke(new Position(7,4)).getClass());
+    }
+
+    @Test
+    void promoteWhileCapturing(){
+        Board tomt = promotionBoard();
+        tomt.settBrikke(new Bishop("B", new Position(7,5)));
+        ChessGame customGame = new ChessGame(tomt);
+        assertTrue(customGame.Move(new Position(6,4), new Position(7,5), "Rook"));
+        assertEquals(Rook.class, tomt.getBrikke(new Position(7,5)).getClass());
+        assertEquals("W", tomt.getBrikke(new Position(7,5)).getColor());
+        assertEquals(null, tomt.getBrikke(new Position(6,4)));
+    }
+
+    @Test
+    void blackPromotes(){
+        Board tomt = Board.tomtBrett();
+        tomt.settBrikke(new King("W", new Position(2,7)));
+        tomt.settBrikke(new King("B", new Position(7,7)));
+        tomt.settBrikke(new Pawn("B", new Position(1,3)));
+        ChessGame customGame = new ChessGame(tomt);
+        assertTrue(customGame.Move(new Position(2,7), new Position(2,6)));
+        assertTrue(customGame.Move(new Position(1,3), new Position(0,3), "Bishop"));
+        assertEquals(Bishop.class, tomt.getBrikke(new Position(0,3)).getClass());
+        assertEquals("B", tomt.getBrikke(new Position(0,3)).getColor());
+    }
+
+    @Test
+    void invalidPromotionChoice(){
+        Board tomt = promotionBoard();
+        ChessGame customGame = new ChessGame(tomt);
+        assertThrows(IllegalArgumentException.class, () -> customGame.Move(new Position(6,4), new Position(7,4), "King"));
+        assertEquals(Pawn.class, tomt.getBrikke(new Position(6,4)).getClass()); //ingenting er flyttet
+        assertEquals("W", customGame.getTurn());
+    }
+
+    @Test
+    void detectsPromotion(){
+        ChessGame customGame = new ChessGame(promotionBoard());
+        assertTrue(customGame.erBondeforvandling(new Position(6,4), new Position(7,4)));
+        assertFalse(customGame.erBondeforvandling(new Position(0,0), new Position(1,0))); //konge
+        assertFalse(game.erBondeforvandling(new Position(1,4), new Position(2,4))); //vanlig bondetrekk
+    }
+
 }

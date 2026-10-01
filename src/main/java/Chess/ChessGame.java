@@ -172,7 +172,32 @@ public class ChessGame implements ChessRules{
         return iSjakk;
     }
 
-    public Boolean Move(Position fra, Position til) { //sjekker om det er et gyldig move, og da gjennomfører den bevegelsen. 
+    public boolean erBondeforvandling(Position fra, Position til){ //bonde som når siste rad
+        Brikke brikke = board.getBrikke(fra);
+        if(!(brikke instanceof Pawn)){
+            return false;
+        }
+        int sisteRad = "W".equals(brikke.getColor()) ? 7 : 0;
+        return til.getrow() == sisteRad;
+    }
+
+    private Brikke lagForvandling(String forvandling, String farge, Position position){ //lager brikken bonden blir til
+        switch(forvandling){
+            case "Queen": return new Queen(farge, position);
+            case "Rook": return new Rook(farge, position);
+            case "Bishop": return new Bishop(farge, position);
+            case "Horse": return new Horse(farge, position);
+            default: throw new IllegalArgumentException("Bonden kan ikke bli til " + forvandling);
+        }
+    }
+
+    public Boolean Move(Position fra, Position til) { //bonde som når siste rad blir dronning
+        return Move(fra, til, "Queen");
+    }
+
+    public Boolean Move(Position fra, Position til, String forvandling) { //sjekker om det er et gyldig move, og da gjennomfører den bevegelsen. 
+        lagForvandling(forvandling, "W", til); //kaster unntak med en gang hvis valget er ugyldig
+
         //sjekke om det er et gyldig move
         if(gameOver){
             return false;
@@ -192,6 +217,7 @@ public class ChessGame implements ChessRules{
         }
         //Trekket er gyldig, så nå gjennomfører vi trekket
         String color = board.getBrikke(fra).getColor();
+        boolean blirForvandlet = erBondeforvandling(fra, til); //må sjekkes før bonden flyttes
 
         board.fjernBrikke(slåttRute(brikke, fra, til)); //ved en passant står den slåtte bonden ikke på til-ruten
         board.movePiece(fra, til);
@@ -203,6 +229,12 @@ public class ChessGame implements ChessRules{
             Position tårnTil = til.getcol() == 6 ? new Position(rad, 5) : new Position(rad, 3);
             board.movePiece(tårnFra, tårnTil);
             board.getBrikke(tårnTil).setBrukt();
+        }
+
+        if(blirForvandlet){ //bonden står nå på siste rad og byttes ut
+            Brikke ny = lagForvandling(forvandling, color, til);
+            ny.setBrukt();
+            board.settBrikke(ny);
         }
 
         if(brikke instanceof Pawn && Math.abs(til.getrow() - fra.getrow()) == 2){ //dobbelsteg, kan slås en passant i neste trekk
