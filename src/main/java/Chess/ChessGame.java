@@ -149,10 +149,19 @@ public class ChessGame implements ChessRules{
         return board.getBrikke(rute) == null && !board.erAngrepet(rute, motstander);
     }
 
+    private Position slåttRute(Brikke brikke, Position fra, Position til){ //ruten til brikken som blir slått
+        if(brikke instanceof Pawn pawn && pawn.erEnPassant(board, til)){
+            return new Position(fra.getrow(), til.getcol());
+        }
+        return til;
+    }
+
     private boolean setterEgenKongeISjakk(Position fra, Position til){ //prøver trekket, sjekker sjakk og setter brettet tilbake
         Brikke brikke = board.getBrikke(fra);
-        Brikke slått = board.getBrikke(til);
+        Position slåttRute = slåttRute(brikke, fra, til);
+        Brikke slått = board.getBrikke(slåttRute);
 
+        board.fjernBrikke(slåttRute); //ved en passant står den slåtte bonden ikke på til-ruten
         board.movePiece(fra, til);
         boolean iSjakk = board.erISjakk(brikke.getColor());
 
@@ -184,6 +193,7 @@ public class ChessGame implements ChessRules{
         //Trekket er gyldig, så nå gjennomfører vi trekket
         String color = board.getBrikke(fra).getColor();
 
+        board.fjernBrikke(slåttRute(brikke, fra, til)); //ved en passant står den slåtte bonden ikke på til-ruten
         board.movePiece(fra, til);
         brikke.setBrukt();
 
@@ -193,6 +203,13 @@ public class ChessGame implements ChessRules{
             Position tårnTil = til.getcol() == 6 ? new Position(rad, 5) : new Position(rad, 3);
             board.movePiece(tårnFra, tårnTil);
             board.getBrikke(tårnTil).setBrukt();
+        }
+
+        if(brikke instanceof Pawn && Math.abs(til.getrow() - fra.getrow()) == 2){ //dobbelsteg, kan slås en passant i neste trekk
+            board.setEnPassantRute(new Position((fra.getrow() + til.getrow()) / 2, fra.getcol()));
+        }
+        else{
+            board.setEnPassantRute(null);
         }
 
         try {

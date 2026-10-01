@@ -4,6 +4,7 @@ package Chess;
 public class Board {
 
     private Brikke[][] board = new Brikke[8][8]; //Array med 8x8 ruter 
+    private Position enPassantRute; //ruten en bonde hoppet over i forrige trekk, null hvis ingen
 
     public Board(){
         this(true);
@@ -57,6 +58,18 @@ public class Board {
     
     public Brikke getBrikke(Position position){
         return(board[position.getrow()][position.getcol()]);
+    }
+
+    public void fjernBrikke(Position position){
+        board[position.getrow()][position.getcol()] = null;
+    }
+
+    public Position getEnPassantRute(){
+        return enPassantRute;
+    }
+
+    public void setEnPassantRute(Position rute){
+        this.enPassantRute = rute;
     }
 
     public boolean erAngrepet(Position rute, String angriperFarge){ //sjekker om en brikke av angriperFarge kan slå på ruten

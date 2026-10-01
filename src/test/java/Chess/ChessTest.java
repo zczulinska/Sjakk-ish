@@ -444,4 +444,86 @@ public class ChessTest {
         assertTrue(customGame.lovligeTrekk(new Position(0,4)).contains(new Position(0,2)));
     }
 
+    @Test
+    void enPassantFromStart(){
+        assertTrue(game.Move(new Position(1,4), new Position(3,4))); //e4
+        assertTrue(game.Move(new Position(6,0), new Position(5,0))); //a6
+        assertTrue(game.Move(new Position(3,4), new Position(4,4))); //e5
+        assertTrue(game.Move(new Position(6,3), new Position(4,3))); //d5, hopper over (5,3)
+        assertTrue(game.Move(new Position(4,4), new Position(5,3))); //exd6 en passant
+
+        assertEquals(Pawn.class, game.getBoard().getBrikke(new Position(5,3)).getClass());
+        assertEquals("W", game.getBoard().getBrikke(new Position(5,3)).getColor());
+        assertEquals(null, game.getBoard().getBrikke(new Position(4,3))); //svart bonde er slått
+        assertEquals(null, game.getBoard().getBrikke(new Position(4,4)));
+    }
+
+    @Test
+    void blackCanCaptureEnPassant(){
+        Board tomt = Board.tomtBrett();
+        tomt.settBrikke(new King("W", new Position(0,0)));
+        tomt.settBrikke(new King("B", new Position(7,7)));
+        tomt.settBrikke(new Pawn("W", new Position(1,4)));
+        tomt.settBrikke(new Pawn("B", new Position(3,3)));
+        ChessGame customGame = new ChessGame(tomt);
+
+        assertTrue(customGame.Move(new Position(1,4), new Position(3,4)));
+        assertTrue(customGame.Move(new Position(3,3), new Position(2,4)));
+        assertEquals(null, tomt.getBrikke(new Position(3,4)));
+    }
+
+    @Test
+    void enPassantOnlyRightAfterDoubleStep(){
+        Board tomt = Board.tomtBrett();
+        tomt.settBrikke(new King("W", new Position(0,0)));
+        tomt.settBrikke(new King("B", new Position(7,7)));
+        tomt.settBrikke(new Pawn("W", new Position(4,4)));
+        tomt.settBrikke(new Pawn("B", new Position(6,3)));
+        ChessGame customGame = new ChessGame(tomt);
+
+        assertTrue(customGame.Move(new Position(0,0), new Position(0,1)));
+        assertTrue(customGame.Move(new Position(6,3), new Position(4,3))); //dobbelsteg
+        assertTrue(customGame.lovligeTrekk(new Position(4,4)).contains(new Position(5,3)));
+
+        assertTrue(customGame.Move(new Position(0,1), new Position(0,0))); //hvit venter
+        assertTrue(customGame.Move(new Position(7,7), new Position(7,6)));
+        assertFalse(customGame.Move(new Position(4,4), new Position(5,3))); //for sent
+    }
+
+    @Test
+    void noEnPassantAfterSingleSteps(){
+        Board tomt = Board.tomtBrett();
+        tomt.settBrikke(new King("W", new Position(0,0)));
+        tomt.settBrikke(new King("B", new Position(7,7)));
+        tomt.settBrikke(new Pawn("W", new Position(4,4)));
+        tomt.settBrikke(new Pawn("B", new Position(6,3)));
+        ChessGame customGame = new ChessGame(tomt);
+
+        assertTrue(customGame.Move(new Position(0,0), new Position(0,1)));
+        assertTrue(customGame.Move(new Position(6,3), new Position(5,3))); //ett steg
+        assertTrue(customGame.Move(new Position(0,1), new Position(0,0)));
+        assertTrue(customGame.Move(new Position(5,3), new Position(4,3))); //ett steg til, står nå ved siden av
+        assertFalse(customGame.lovligeTrekk(new Position(4,4)).contains(new Position(5,3)));
+    }
+
+    @Test
+    void noEnPassantThatExposesKing(){
+        Board tomt = Board.tomtBrett();
+        tomt.settBrikke(new King("W", new Position(4,0)));
+        tomt.settBrikke(new Pawn("W", new Position(4,4)));
+        tomt.settBrikke(new Rook("W", new Position(0,7)));
+        tomt.settBrikke(new Pawn("B", new Position(6,3)));
+        tomt.settBrikke(new Rook("B", new Position(4,7))); //begge bøndene står mellom tårnet og hvit konge
+        tomt.settBrikke(new King("B", new Position(7,6)));
+        ChessGame customGame = new ChessGame(tomt);
+
+        assertTrue(customGame.Move(new Position(0,7), new Position(1,7)));
+        assertTrue(customGame.Move(new Position(6,3), new Position(4,3))); //dobbelsteg
+        List<Position> trekk = customGame.lovligeTrekk(new Position(4,4));
+        assertFalse(trekk.contains(new Position(5,3))); //en passant ville fjernet begge bøndene fra raden
+        assertTrue(trekk.contains(new Position(5,4)));
+        //brettet er satt tilbake etter at trekket ble prøvd
+        assertEquals(Pawn.class, tomt.getBrikke(new Position(4,3)).getClass());
+    }
+
 }

@@ -48,6 +48,7 @@ Ressurser (FXML og brikkebilder) ligger i `src/main/resources/Chess/`. Testene l
 - **Koordinater:** `row 0` er hvit bakerste rad (vises øverst i GUI), `row 7` er svart. Hvite bønder går mot økende `row`. `finnPosisjon` mapper `row 0 → "8"` og `col 0 → "A"`, så hvite trekk logges med svarts rader (f.eks. hvit springer `B8->C6`). Dette er ikke standard notasjon; testen `move_writeToFile` avhenger av det.
 - **Trekkgenerering:** brikkene lager posisjoner med `new Position(...)` og fanger `IllegalArgumentException` for å hoppe over ruter utenfor brettet.
 - **`setBrukt()`** brukes av `Pawn` (dobbelsteg) og av `King` og `Rook` (rokade). Andre brikker har tomme implementasjoner.
+- **En passant:** `Board` husker ruten en bonde hoppet over (`enPassantRute`), og `ChessGame.Move` setter den etter hvert trekk. `Pawn.erEnPassant` avgjør om et slag er en passant, og `ChessGame.slåttRute` finner bonden som skal fjernes, både ved selve trekket og når trekket prøves i sjakksjekken.
 - **Rokade** genereres i `ChessGame.rokadeTrekk`, ikke i `King.lovligetrekk`. Ellers ville angrepssjekken (`Board.erAngrepet`) kalt seg selv i det uendelige.
 - **`Brikke.getlovligetrekk`-feltet** i superklassen brukes ikke; alle subklasser overstyrer `getlovligetrekk()`.
 - **Spillslutt:** etter hvert trekk sjekker `ChessGame` om den som har tur har lovlige trekk. Ingen trekk og i sjakk gir sjakkmatt, ingen trekk uten sjakk gir patt (remis, `getWinner()` er `null`).

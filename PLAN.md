@@ -61,7 +61,7 @@ Med standard notasjon blir det `B1->C3`. Testene ville da sjekke en notasjon vi 
   - Rokadetrekkene holdes utenfor angrepssjekken, så de to sjekkene ikke kaller hverandre i det uendelige.
   - Tester: kort og lang rokade, og at rokade nektes i hvert av tilfellene over.
 
-- [ ] **Steg 8: En passant**
+- [x] **Steg 8: En passant**
   - `Board` husker hvilken rute som kan slås en passant etter et dobbeltsteg, og nullstiller den etter neste trekk.
   - Når en bonde slår en passant, fjernes den slåtte bonden.
   - Tester: lovlig en passant, at muligheten forsvinner etter ett trekk, og en passant som ville blottlagt egen konge.
