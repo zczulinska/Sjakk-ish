@@ -1,5 +1,8 @@
 package Chess;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ChessGame implements ChessRules{
 
     private String turn = "W";
@@ -66,6 +69,36 @@ public class ChessGame implements ChessRules{
         }
     }
 
+    public List<Position> lovligeTrekk(Position fra){ //brikkens trekk, uten de som setter egen konge i sjakk
+        List<Position> lovlige = new ArrayList<>();
+        Brikke brikke = board.getBrikke(fra);
+        if(brikke == null){
+            return lovlige;
+        }
+        brikke.lovligetrekk(board);
+        List<Position> kandidater = new ArrayList<>(brikke.getlovligetrekk()); //kopi, siden sjakksjekken regner ut trekklister på nytt
+        for(Position til : kandidater){
+            if(!setterEgenKongeISjakk(fra, til)){
+                lovlige.add(til);
+            }
+        }
+        return lovlige;
+    }
+
+    private boolean setterEgenKongeISjakk(Position fra, Position til){ //prøver trekket, sjekker sjakk og setter brettet tilbake
+        Brikke brikke = board.getBrikke(fra);
+        Brikke slått = board.getBrikke(til);
+
+        board.movePiece(fra, til);
+        boolean iSjakk = board.erISjakk(brikke.getColor());
+
+        board.movePiece(til, fra);
+        if(slått != null){
+            board.settBrikke(slått);
+        }
+        return iSjakk;
+    }
+
     public Boolean Move(Position fra, Position til) { //sjekker om det er et gyldig move, og da gjennomfører den bevegelsen. 
         //sjekke om det er et gyldig move
         if(gameOver){
@@ -77,12 +110,11 @@ public class ChessGame implements ChessRules{
         if(brikke == null){
             return false;
         }
-        brikke.lovligetrekk(board); 
         if(!brikke.getColor().equals(turn)){
             return false;
         }
 
-        if(!brikke.getlovligetrekk().contains(til)){
+        if(!lovligeTrekk(fra).contains(til)){
             return false;
         }
         //Trekket er gyldig, så nå gjennomfører vi trekket

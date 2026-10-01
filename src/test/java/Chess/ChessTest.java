@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -221,6 +222,71 @@ public class ChessTest {
         assertTrue(tomt.erAngrepet(new Position(3,3), "B"));
         assertTrue(tomt.erAngrepet(new Position(4,5), "B"));
         assertFalse(tomt.erAngrepet(new Position(2,4), "B"));
+    }
+
+    @Test
+    void pinnedPieceCannotLeaveLine(){
+        Board tomt = Board.tomtBrett();
+        tomt.settBrikke(new King("W", new Position(0,4)));
+        tomt.settBrikke(new King("B", new Position(7,0)));
+        tomt.settBrikke(new Rook("W", new Position(1,4))); //bundet til kongen
+        tomt.settBrikke(new Rook("B", new Position(5,4)));
+        ChessGame customGame = new ChessGame(tomt);
+
+        List<Position> trekk = customGame.lovligeTrekk(new Position(1,4));
+        assertFalse(trekk.contains(new Position(1,0))); //ut av linjen
+        assertTrue(trekk.contains(new Position(3,4))); //langs linjen
+        assertTrue(trekk.contains(new Position(5,4))); //slå brikken som binder
+        assertFalse(customGame.Move(new Position(1,4), new Position(1,0)));
+    }
+
+    @Test
+    void mustGetOutOfCheck(){
+        Board tomt = Board.tomtBrett();
+        tomt.settBrikke(new King("W", new Position(0,4)));
+        tomt.settBrikke(new King("B", new Position(7,0)));
+        tomt.settBrikke(new Rook("B", new Position(5,4))); //gir sjakk
+        tomt.settBrikke(new Rook("W", new Position(2,0)));
+        tomt.settBrikke(new Horse("W", new Position(0,1)));
+        ChessGame customGame = new ChessGame(tomt);
+
+        assertFalse(customGame.Move(new Position(0,1), new Position(2,2))); //hjelper ikke
+        assertFalse(customGame.lovligeTrekk(new Position(0,4)).contains(new Position(1,4))); //fortsatt i sjakk
+        assertTrue(customGame.lovligeTrekk(new Position(0,4)).contains(new Position(0,3))); //går ut av sjakk
+        assertTrue(customGame.Move(new Position(2,0), new Position(2,4))); //blokkerer
+    }
+
+    @Test
+    void kingCannotMoveIntoCheck(){
+        Board tomt = Board.tomtBrett();
+        tomt.settBrikke(new King("W", new Position(0,4)));
+        tomt.settBrikke(new King("B", new Position(7,0)));
+        tomt.settBrikke(new Rook("B", new Position(5,3))); //dekker kolonne 3
+        tomt.settBrikke(new Pawn("B", new Position(2,6))); //dekker (1,5) og (1,7)
+        ChessGame customGame = new ChessGame(tomt);
+
+        List<Position> trekk = customGame.lovligeTrekk(new Position(0,4));
+        assertFalse(trekk.contains(new Position(0,3)));
+        assertFalse(trekk.contains(new Position(1,3)));
+        assertFalse(trekk.contains(new Position(1,5)));
+        assertTrue(trekk.contains(new Position(0,5)));
+        assertTrue(trekk.contains(new Position(1,4)));
+    }
+
+    @Test
+    void kingCannotCaptureDefendedPiece(){
+        Board tomt = Board.tomtBrett();
+        tomt.settBrikke(new King("W", new Position(0,4)));
+        tomt.settBrikke(new King("B", new Position(7,0)));
+        tomt.settBrikke(new Rook("B", new Position(1,4)));
+        tomt.settBrikke(new Rook("B", new Position(5,4))); //dekker tårnet på (1,4)
+        ChessGame customGame = new ChessGame(tomt);
+
+        assertFalse(customGame.lovligeTrekk(new Position(0,4)).contains(new Position(1,4)));
+        //brettet er satt tilbake etter at trekket ble prøvd
+        assertEquals(King.class, tomt.getBrikke(new Position(0,4)).getClass());
+        assertEquals(Rook.class, tomt.getBrikke(new Position(1,4)).getClass());
+        assertEquals(new Position(1,4), tomt.getBrikke(new Position(1,4)).getPosition());
     }
 
 }

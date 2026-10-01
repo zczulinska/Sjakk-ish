@@ -30,7 +30,7 @@ Med standard notasjon blir det `B1->C3`. Testene ville da sjekke en notasjon vi 
   - Bonden behandles spesielt. Den angriper skrått også når ruten er tom, mens `lovligetrekk` bare legger til skrå trekk når det står en motstander der.
   - Tester: tårn, løper, springer, bonde og konge gir sjakk, og en brikke i veien blokkerer.
 
-- [ ] **Steg 3: Trekk som setter egen konge i sjakk blir ulovlige**
+- [x] **Steg 3: Trekk som setter egen konge i sjakk blir ulovlige**
   - `ChessGame` får `lovligeTrekk(Position)`. Den prøver hvert trekk midlertidig på brettet og fjerner trekk der egen konge står i sjakk etterpå.
   - `Move` bruker denne metoden.
   - Tester: en bundet brikke kan ikke flytte, en konge i sjakk må komme seg ut, og kongen kan ikke gå inn i sjakk.
